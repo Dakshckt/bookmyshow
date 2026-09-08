@@ -63,6 +63,7 @@ def locationFunc(req):
         })
 
     cities = get_all_data(city)
+    
 
     return render(req , "admin/location.html" , {"cities" : cities})
 

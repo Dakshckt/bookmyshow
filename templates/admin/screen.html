@@ -3,31 +3,31 @@
 {% block content %}
 {% load static %}
 
-<h3>Screen Page</h3>
+<h3 class="h3 p-2">Screen Page</h3><hr>
 
 <form id="screenForm" method="POST">
 
     {% csrf_token %}
 <!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
-    <select name="citySelect" id="citySelect">
+    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
         <option value="null">Select city</option>
         {% for city in cities %}
         <option value="{{city.id}}">{{city.name}}</option>
         {% endfor %}
-    </select><br><Br>
+    </select><br>
         
-    <select name="locationSelect" id="locationSelect">
+    <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
         <option value="null">Select location</option>
-    </select><br><Br>
+    </select><br>
     
     
-    <select name="theaterSelect" id="theaterSelect">
+    <select name="theaterSelect" id="theaterSelect" class="border border-black px-3 py-2 mt-4 ms-2">
     <option value="null">Select theater</option>
-    </select><br><Br>
+    </select><br>
 
-    <input type="text" name="screenName" placeholder="Enter the Name of Screen"><br><br>
+    <input type="text" name="screenName" id="screenName" placeholder="Enter the Name of Screen" class="border border-black px-3 py-2 mt-4 ms-2"><br>
 
-    <input type="submit" value="submit" name="submit">
+    <input type="submit" value="submit" name="submit" class="btn btn-primary px-3 mt-4 ms-2 px-5">
 
     <br><br><Br><p id="result"></p>
 
@@ -53,11 +53,12 @@
 
                     if(res.status)
                     {
-                        $("#result").html(res.message)   
+                        $("#result").html(`<p class="alert alert-success">${res.message}</p>`)   
+                        $("#screenName").val('')
                     }
                     else
                     {
-                        $("#result").html(res.message)   
+                        $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
                     }
 
                 }

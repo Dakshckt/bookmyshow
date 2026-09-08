@@ -2,13 +2,13 @@
 
 {% block content %}
 
-<h3>City Page</h3>
+<h3 class="h3 p-2">City Page</h3><hr>
 
 <form id="cityForm" method="post">
 
     {% csrf_token %}
-    <input type="text" name="cityname" id="cityname" placeholder="Enter Name of the city">
-    <input type="submit" name="submit" value="Add City">
+    <input type="text" name="cityname" id="cityname" placeholder="Enter Name of the city" class="border border-black px-3 py-2 mt-4 ms-2">
+    <Br><input type="submit" name="submit" value="Add City" class="btn btn-primary px-3 mt-4 ms-2 px-5">
 
     <br><Br><Br>
     <p id="result"></p>
@@ -39,12 +39,12 @@
 
                         if(res.status == true)
                         {
-                            $("#result").html(res.message)  
+                            $("#result").html(`<p class="alert alert-success">${res.message}</p>`)  
                             $("#cityname").val("") 
                         }
                         else
                         {
-                            $("#result").html(res.message)   
+                            $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
                         }
 
                     }

@@ -2,22 +2,22 @@
 
 {% block content %}
 
-<h3>Movies Page</h3>
+<h3 class="h3 p-2">Movies Page</h3><hr>
 
 <form id="movieForm" method="post" enctype="multipart/form-data">
 
     {% csrf_token %}
-    <input type="text" name="name" placeholder="Enter the Name"><br><Br>
-    <textarea name="desc" id="desc" placeholder="Enter the description"></textarea><br><Br>
-    <input type="file" name="poster" id="poster" placeholder="Select any file"><br><br>
-    <select name="movieTypeSelect" id="movieTypeSelect" multiple>
+    <input type="text" name="name" id="name" placeholder="Enter the Name" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+    <textarea name="desc" id="desc" placeholder="Enter the description" class="border border-black px-3 py-2 mt-4 ms-2"></textarea><br>
+    <input type="file" name="poster" id="poster" placeholder="Select any file" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+    <select name="movieTypeSelect" id="movieTypeSelect" multiple class="border border-black px-3 py-2 mt-4 ms-2">
         {% for movie_type in movies_type %}
             <option value="{{movie_type.id}}">{{movie_type.name}}</option>
         {% endfor %}
-    </select><br><br>
-    <input type="number" name="duration" id="duration" placeholder="Enter the duration in minutes"><br><Br>
+    </select><br>
+    <input type="number" name="duration" id="duration" placeholder="Enter the duration in minutes" class="border border-black px-3 py-2 mt-4 ms-2"><br>
         
-    <input type="submit" name="submit" value="add Movie"><br><Br><br>
+    <input type="submit" name="submit" value="Add Movie" class="btn btn-primary px-3 mt-4 ms-2 px-5"><br><Br><br>
 
     <p id="result"></p>
 
@@ -45,11 +45,15 @@
                 {
                     if(res.status)
                     {
-                        $("#result").html(res.message)   
+                        $("#result").html(`<p class="alert alert-success">${res.message}</p>`) 
+                        $("#name").val('')  
+                        $("#desc").val('')  
+                        $("#poster").val('')  
+                        $("#duration").val('')  
                     }
                     else
                     {
-                        $("#result").html(res.message)   
+                        $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
                     }
                 }
 

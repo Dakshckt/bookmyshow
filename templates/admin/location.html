@@ -2,23 +2,27 @@
 
 {% block content %}
 
-<h3>Location Page</h3>
+<h3 class="h3 p-2">Location Page</h3><hr>
 
 <form id="locationForm" method="post">
 
     {% csrf_token %}
-    <input type="text" name="locationName" placeholder="Enter Location Name">
+    <input type="text" name="locationName" id="locationName" placeholder="Enter Location Name"  class="border border-black px-3 py-2 mt-4 ms-2">
     <br>
-    <select name="citySelect" id="citySelect">
+    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
         <option value="null">Select</option>
         {% for city in cities %}
             <option value="{{city.id}}">{{city.name}}</option>
         {% endfor %}
-    </select><br><Br>
-    <input type="submit" name="submit" value="Add Location">
+    </select><br>
+    <input type="submit" name="submit" value="Add Location" class="btn btn-primary px-3 mt-4 ms-2 px-5">
 
     <br><Br><br><p id="result"></p>
 
+    <br><Br><Br>
+    <div>
+
+    </div>
 
     <script>
 
@@ -38,11 +42,12 @@
 
                         if(res.status)
                         {
-                            $("#result").html(res.message)   
+                            $("#result").html(`<p class="alert alert-success">${res.message}</p>`) 
+                            $("#locationName").val('')  
                         }
                         else
                         {
-                            $("#result").html(res.message)   
+                            $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
                         }
 
                     }

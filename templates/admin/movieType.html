@@ -2,13 +2,13 @@
 
 {% block content %}
 
-<h3>Movie Type Page</h3>
+<h3 class="h3 p-2">Movie Type Page</h3><hr>
 
 <form id="movieTypeForm" method="post">
 
     {% csrf_token %}
-    <input type="text" name="movieTypeName" id="movieTypeName" placeholder="Enter Name of the movieType">
-    <input type="submit" name="submit" value="Add movieType">
+    <input type="text" name="movieTypeName" id="movieTypeName" placeholder="Enter Name of the movieType" class="border border-black px-3 py-2 mt-4 ms-2">
+    <br><input type="submit" name="submit" value="Add movieType" class="btn btn-primary px-3 mt-4 ms-2 px-5">
 
     <br><Br><Br>
     <p id="result"></p>
@@ -39,11 +39,12 @@
 
                         if(res.status == true)
                         {
-                            $("#result").html(res.message) 
+                            $("#result").html(`<p class="alert alert-success">${res.message}</p>`) 
+                            $("#movieTypeName").val('')
                         }
                         else
                         {
-                            $("#result").html(res.message)   
+                            $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
                         }
 
                     }
@@ -58,3 +59,5 @@
 </form>
 
 {% endblock %}
+
+
