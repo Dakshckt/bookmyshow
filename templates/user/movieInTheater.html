@@ -7,11 +7,11 @@
 
 <div class="container">
 
-    <div class="border border-danger p-4">
-        <h3>{{ movies.name }}</h3>
+    <div class="p-4">
+        <h3 class="h1 fw-bolder">{{ movies.name }}</h3>
         {% csrf_token %}
-        <label for="locationSelect">Following are the locations of the theaters the movie is streaming</label><br><br>
-        <select name="locationSelect" id="locationSelect">
+        <label for="locationSelect" class="mt-4">Following are the locations of the theaters the movie is streaming</label><br><br>
+        <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mb-3 rounded-2">
             <option value="null">Select the location</option>
             {% for location in location_list %}
             <option value="{{location.id}}" >{{location.name}}</option>
@@ -20,12 +20,17 @@
         <input type="text" name="movieId" id="movieId" value="{{movies.id}}" hidden>
 
     </div>
-    <div class="border border-success p-4" style="display: flex;flex-wrap: wrap;" id="dateDisplay">
-    
-
-
+    <div class="bg-light"> 
+        <div id="dates_text_heading">
+            <h5 class="h5 px-3 pt-4 pb-2 fw-bolder">Select The Date :</h5>
+        </div>   
+        <div class="px-3 pb-4" style="display: flex;flex-wrap: wrap;" id="dateDisplay">
+            
+            
+            
+        </div>
     </div>
-    <div class="border border-primary p-4" id="displayTheaters">
+    <div class="p-4 bg-light" id="displayTheaters">
 
         
 
@@ -40,6 +45,7 @@
     $(document).ready(function(){
 
         console.log("Moive in theater page client")
+        $("#dates_text_heading").hide()
 
 
         $("#locationSelect").change(function(event){
@@ -63,19 +69,28 @@
                         all_dates = res.all_dates
 
                         $("#dateDisplay").html("")
-                        result = ""
+                        
+                        let first_time = true
+
                         all_dates.forEach(element => {
                             
                             result = $("#dateDisplay").html()
+                            if(first_time)
+                            {
+                                $("#dates_text_heading").hide()
+                               first_time = false    
+                            }
+
                             $("#dateDisplay").html(result + `<br>
 
-                                <button class="btn btn-outline-dark me-2 mt-2 p-2 dateCard" data-date="${element}">${element}</button>
+                                <button class="btn btn-outline-dark me-2 mt-2 p-2 dateCard" data-date="${element}">${formatDate(element)}</button>
 
                             `)
 
                         });
 
                         $("#displayTheaters").html("")
+                        $("#dates_text_heading").show()
                     }
 
                     // THIS IS FROM THE BELOW CODE WAS TAKEN 
@@ -90,9 +105,9 @@
 
         $(document).on('click' , ".dateCard" , function(){
 
-            $(".dateCard").removeClass("bg-blue-600 text-white border-blue-600");
+            $(".dateCard").removeClass("bg-red-600 text-white border-red-600");
 
-            $(this).addClass("bg-blue-600 text-white border-blue-600");
+            $(this).addClass("bg-red-600 text-white border-red-600");
 
             date_selected = $(this).data("date")
             // alert("Date Selected : " + date_selected)
@@ -138,8 +153,8 @@
 
                                 new_screen += `
                                 
-                                    <div class="border border-primary singleScreen" style="width: 200px;height: auto;flex-shrink: 0;">
-                                        <a href="/client/seats/${temp.show_id}/${temp.show_timming_id}/${date_selected}">From ${start} <br>To ${end}</a>
+                                    <div class="border border-success singleScreen px-3 py-2 text-secondary fw-bold" style="width: auto;height: auto;flex-shrink: 0;">
+                                        <a href="/client/seats/${temp.show_id}/${temp.show_timming_id}/${date_selected}">${start}</a>
                                         
                                     </div><br>
 
@@ -149,14 +164,14 @@
                             
                             $("#displayTheaters").append(`
 
-                                <div class="singleShow" style="width: 100%;">
+                                <div class="singleShow col-12 p-3 mb-2" style="background-color:white;width: 100%;">
                                     <div class="row">
-                                        <div class="border border-danger p-2" style="height: 100%;">
+                                        <div class="p-2 fw-bold" style="height: 100%;">
                                             
                                             <h4>${element.theater_name} : ${element.screen_name}</h4>
 
-                                        </div>    
-                                        <div class="border border-danger py-3 gap-3" style="display: flex;width: 100%;overflow-x: auto;flex-wrap: nowrap;">
+                                        </div><hr>
+                                        <div class="py-3 gap-2" style="display: flex;width: 100%;overflow-x: auto;flex-wrap: nowrap;">
                                             
                                             ${new_screen}
 
@@ -179,6 +194,37 @@
 
 
     })
+
+
+
+    // Function Generated With the Help of the AI ///////////////////////////////
+
+    function formatDate(dateString) {
+
+        let date = new Date(dateString + "T00:00:00");
+
+        let day = date.toLocaleDateString("en-US", {
+            weekday: "short"
+        });
+
+        let dateNumber = date.toLocaleDateString("en-US", {
+            day: "2-digit"
+        });
+
+        let month = date.toLocaleDateString("en-US", {
+            month: "short"
+        });
+
+        return `
+            <div class="text-center px-1">
+                <div class="fw-bold">${day}</div>
+                <div class="fs-4">${dateNumber}</div>
+                <div>${month}</div>
+            </div>
+        `;
+    }
+    // /////////////////////////////////////////////////////////////////////////////
+
 
 </script>
 

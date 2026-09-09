@@ -4,7 +4,7 @@
 {% block content %}
 {% load static %}
 
-<h3>Seat Selection : {{date_selected}}</h3><br>
+<h3 class="h6 fw-normal p-4" style="text-transform: uppercase;">Seat Selection : {{date_selected}}</h3><hr><br>
 
 <style>
 
@@ -64,28 +64,28 @@
         </form>
         {% for row , seats in screen_seat_obj.items %}
 
-            <div class="col-1" style="display: flex;justify-content: center;align-items: center;">
+            <div class="col-1 col-md-2 col-sm-1 col-lg-3 col-xl-3" style="display: flex;justify-content: center;align-items: center;">
                 {{ row }}
             </div>
 
-            <div class="col-11 py-3">
+            <div class="col-11 col-md-10 col-sm-11 col-lg-9 col-xl-9 py-3">
                 
                 <div class="seat-row gap-2">
                  
                     {% for seat in seats %}
                     
-                    {% if seat.status == "confirmed" %}
-                    
-                        <div class="seat seat-banned seat-disabled" data-seat-id="{{ seat.id }}" aria-disabled="">
-                            {{ seat.name }}
-                        </div>
-                    
-                    {% else %}
+                        {% if seat.status == "confirmed" %}
                         
-                        <div class="seat" data-seat-id="{{ seat.id }}">
-                            {{ seat.name }}
-                        </div>
-                    {% endif %}
+                            <div class="seat seat-banned seat-disabled" data-seat-id="{{ seat.id }}" aria-disabled="">
+                                {{ seat.name }}
+                            </div>
+                        
+                        {% else %}
+                            
+                            <div class="seat" data-seat-id="{{ seat.id }}">
+                                {{ seat.name }}
+                            </div>
+                        {% endif %}
                         
                     {% endfor %}
                     
@@ -93,8 +93,14 @@
             
             </div>
             
-            {% endfor %}
-            <button style="width: 200px;" class="btn btn-primary mx-4 my-5" id="seatSelectedButton">Move to Payment</button>
+        {% endfor %}
+        <div class="col-12" style="display: flex;justify-content: center;align-items: center;">
+            <img src="{% static  'images/Screen.png' %}" alt="All Eyes This Direction">
+        </div>
+        <hr class="mt-5 mb-3">
+        <div class="col-12 d-flex justify-content-end mb-5">
+            <button style="width: 200px;" class="btn btn-primary mx-4" id="seatSelectedButton">Move to Payment</button>
+        </div>
 
     </div>
 

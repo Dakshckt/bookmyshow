@@ -32,10 +32,21 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid black;
     width: 200px;
+    background-color: rgb(245, 245, 245);
+    border: 0.5px solid rgb(200, 200, 200);
+    box-sizing: border-box;
 }
 
+.tab_focus_class{
+    background-color: rgb(229, 229, 229);
+
+}
+
+.tab:hover{
+    background-color: rgb(229, 229, 229);
+    transition: all 0.2s linear;
+}
 
 
 .left_part img{
@@ -48,21 +59,22 @@
 
 <div class="container">
 
-    <div class="col-12 border border-dark py-3" style="display: flex;justify-content: center;align-items: center;">
+    <div class="col-12 py-3" style="display: flex;justify-content: center;align-items: center;">
         <div class="row">
-            <div class="tab py-3" id="booking_tab">
+            <div class="tab py-2" style="border-radius: 50px 0px 0px 50px;" id="booking_tab">
                 Bookings
             </div>
-            <div class="tab py-3" id="history_tab">
+            <div class="tab py-2" id="history_tab">
                 History
             </div>
-            <div class="tab py-3" id="cancel_tab">
+            <div class="tab py-2" style="border-radius: 0px 50px 50px 0px;" id="cancel_tab">
                 Cancelled
             </div>
         </div>
     </div>
+    <hr>
 
-    <div class="col-12 border border-primary" id="bookings_tickets">
+    <div class="col-12" id="bookings_tickets">
             
         <div>
             {% for booking_obj in upcomming_booking %}
@@ -93,7 +105,7 @@
 
     </div>
 
-    <div class="col-12 border border-danger"  id="history_tickets">
+    <div class="col-12"  id="history_tickets">
             
         <div>
             {% for booking_obj in expired_booking %}
@@ -122,7 +134,7 @@
         
     </div>
 
-    <div class="col-12 border border-danger"  id="cancelled_tickets">
+    <div class="col-12"  id="cancelled_tickets">
             
         <div>
             {% for booking_obj in cancelled_booking %}
@@ -160,30 +172,40 @@
     history_tab = document.querySelector("#history_tab")
     cancel_tab = document.querySelector("#cancel_tab")
     document.querySelector("#bookings_tickets").style.display = "flex"
+    document.querySelector("#booking_tab").classList.add("tab_focus_class")
     document.querySelector("#history_tickets").style.display = "none"
     document.querySelector("#cancelled_tickets").style.display = "none"
 
     booking_tab.addEventListener('click' , function(){
 
         document.querySelector("#bookings_tickets").style.display = "flex"
+        document.querySelector("#booking_tab").classList.add("tab_focus_class")
         document.querySelector("#history_tickets").style.display = "none"
+        document.querySelector("#history_tab").classList.remove("tab_focus_class")
         document.querySelector("#cancelled_tickets").style.display = "none"
+        document.querySelector("#cancel_tab").classList.remove("tab_focus_class")
 
     })
 
     history_tab.addEventListener('click' , function(){
 
         document.querySelector("#bookings_tickets").style.display = "none"
+        document.querySelector("#booking_tab").classList.remove("tab_focus_class")
         document.querySelector("#history_tickets").style.display = "flex"
+        document.querySelector("#history_tab").classList.add("tab_focus_class")
         document.querySelector("#cancelled_tickets").style.display = "none"
+        document.querySelector("#cancel_tab").classList.remove("tab_focus_class")
 
     })
 
     cancel_tab.addEventListener('click' , function(){
 
         document.querySelector("#bookings_tickets").style.display = "none"
+        document.querySelector("#booking_tab").classList.remove("tab_focus_class")
         document.querySelector("#history_tickets").style.display = "none"
+        document.querySelector("#history_tab").classList.remove("tab_focus_class")
         document.querySelector("#cancelled_tickets").style.display = "flex"
+        document.querySelector("#cancel_tab").classList.add("tab_focus_class")
 
     })
 
