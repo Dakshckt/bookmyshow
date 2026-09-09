@@ -149,12 +149,15 @@ def seatsFunc(req):
             rows = int(req.POST.get("row"))
             columns = int(req.POST.get("seats_per_row"))
             rowType = req.POST.getlist("rowType")
+            rowPrice = req.POST.getlist("rowPrice")
 
+            
             seat_list = []
 
             for i in range(0 , rows):
                 row_no = chr(65 + i)
                 seat_type = rowType[i]
+                seat_price = rowPrice[i]
 
                 for j in range(1 , columns + 1):
                     column_no = int(j)
@@ -166,10 +169,14 @@ def seatsFunc(req):
                         "row" : row_no,
                         "column" : column_no,
                         "name" : seat_no,
-                        "type" : seat_type
+                        "type" : seat_type,
+                        "price" : seat_price,
                     }
                     seat_list.append(seat_obj)
 
+            # print("\n\n")
+            # print(seat_list)
+            # print("\n\n")
 
             result = seats.insert_many(seat_list)
 

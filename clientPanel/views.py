@@ -255,8 +255,8 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
 
         booking_date = req.POST.get("date_selected")
 
-        print("Called from seat selection")
-        print(booking_date , "\n\n")
+        # print("Called from seat selection")
+        # print(booking_date , "\n\n")
 
         selected_seats = json.loads(req.POST.get("selected_seats"))
 

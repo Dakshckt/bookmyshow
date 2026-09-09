@@ -95,12 +95,13 @@
             let alphabet = String.fromCharCode(65 + i)
             
             seatFormDiv.innerHTML += `
-                <label>Type of ${alphabet} Row</label>
+                <label class="ps-2">Type of ${alphabet} Row</label>
                 <select name="rowType" id="rowType" class="border border-black px-3 py-2 mt-4 ms-2">
                     <option value="VIP">VIP</option>
                     <option value="Gold">Gold</option>
                     <option value="normal" selected>normal</option>
-                </select><Br>
+                </select>
+                <input name="rowPrice" id="rowPrice" class="border border-black px-3 py-2 mt-4 ms-2" placeholder="Enter Price of the Row"><br>
             `
         }
 
