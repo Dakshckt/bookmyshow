@@ -37,7 +37,7 @@
                     </div>
                     <div id="card_part2" class="pb-3">
                         <div id="movie_details">
-                            <h4 class="fw-bold h1 h-sm-3 h-md-2">{{movie.name}}</h4>
+                            <h4 class="fw-bold h2 h-sm-4 h-md-3">{{movie.name}}</h4>
                             <p class="py-2 pb-4">{{movie.description}}</p>
                         </div>
                         <div id="bookBtn">
@@ -51,6 +51,20 @@
     </div>
 
 </div>
+
+<style>
+
+@media (max-width: 1000px) {
+    #bookBtn {
+        margin-top: 20px;
+    }
+
+    #movie_details p{
+        display : none;
+    }
+}
+
+</style>
 
 <script>
 

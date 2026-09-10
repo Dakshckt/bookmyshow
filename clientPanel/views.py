@@ -243,8 +243,20 @@ def sendShowsFunc(req):
 def make_payment():
     return True
 
-def calculate_price_func(selected_seats):
-    return 0
+def calculate_price_func(selected_seats , booking_date):
+
+    # Calculate discount and 18% GST part in the calculation as well 
+
+    selected_seats_obj = []
+    total_amount = 0 
+    for val in selected_seats:
+        selected_seats_obj = seats.find_one({"_id" : ObjectId(val)})
+        total_amount += selected_seats_obj["price"]
+
+    GST_price = total_amount * 1.18
+    
+    return total_amount , GST_price
+
 
 @login_required
 @client_required
@@ -259,31 +271,38 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
         # print(booking_date , "\n\n")
 
         selected_seats = json.loads(req.POST.get("selected_seats"))
+        # print("\n\n")
+        # print(selected_seats)
+        # print("\n\n")
+
+        # Calculated Seat Function Code Part ///////////////////////////////////////
+        # //////////////////////////////////////////////////////////////////////////
 
 
-        calculated_price = calculate_price_func(selected_seats)
+        calculated_price , total_price_gst = calculate_price_func(selected_seats , booking_date)
         payment_result = make_payment()
 
 
         booking_obj = {
 
-            "user_id" : ObjectId(req.session["user_id"]),
-            "show_timing_id" : ObjectId(show_timing_id),
-            "show_id" : ObjectId(show_id),
+            "user_id" : req.session["user_id"],
+            "show_timing_id" : show_timing_id,
+            "show_id" : show_id,
             "selected_seats" : selected_seats,
-            "payment_id" : None,
+            # "payment_id" : None,
             "booking_date" : datetime.strptime(booking_date, "%Y-%m-%d"),
             "total_amount" : calculated_price,
-            "status" : "confirmed",       # Has only 3 values as 'confirmed' 'cancelled' 'available'  
+            "total_amount_gst" : total_price_gst,
+            # "status" : "confirmed",       # Has only 3 values as 'confirmed' 'cancelled' 'available'  
         }
         print("\n\n")
         print(booking_obj)
         print("\n\n")
-        result = booking.insert_one(booking_obj)
+        # No need to add this in the booking table from here fo it in the nrext payment Function 
+        # result = booking.insert_one(booking_obj)
 
-        if result:    
+        return JsonResponse({"status" : True , "message" : "Seat Bokked" , "booking_obj" : booking_obj})
 
-           return JsonResponse({"status" : True , "message" : "Seat Bokked"})
 
 
     # Not displayed the type of seat in the row which will also help to calculate the price of the seat 
@@ -334,6 +353,9 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
     return render(req , "user/seatSelection.html" , {"screen_seat_obj" : screen_seat_obj , "date_selected" : date_selected})
 
 
+
+def paymentFunc(req):
+    return 0
 
 
 

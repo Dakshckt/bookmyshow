@@ -170,7 +170,7 @@ def seatsFunc(req):
                         "column" : column_no,
                         "name" : seat_no,
                         "type" : seat_type,
-                        "price" : seat_price,
+                        "price" : int(seat_price),
                     }
                     seat_list.append(seat_obj)
 

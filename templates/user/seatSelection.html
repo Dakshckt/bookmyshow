@@ -99,7 +99,7 @@
         </div>
         <hr class="mt-5 mb-3">
         <div class="col-12 d-flex justify-content-end mb-5">
-            <button style="width: 200px;" class="btn btn-primary mx-4" id="seatSelectedButton">Move to Payment</button>
+            <button style="width: 200px;" class="btn btn-primary mx-4" id="moveToPaymentBtn">Move to Payment</button>
         </div>
 
     </div>
@@ -129,7 +129,7 @@
 
     $(document).ready(function(){
 
-        $("#seatSelectedButton").click(function(event){
+        $("#moveToPaymentBtn").click(function(event){
 
             event.preventDefault()
 
@@ -143,7 +143,8 @@
 
             })
 
-            result = confirm("Procced to Payment")
+            result = confirm("Confirm Procced to Payment")
+            
 
             if(result)
             {
@@ -158,9 +159,10 @@
                     },
                     success : function(res){
 
-                        alert(res.message)
-                        window.location.href = "/client/my-booking/"
+                        // Add the payment wala part here //////////////////////
+                        // /////////////////////////////////////////////////////
 
+                        console.log(res.booking_obj)
                     }
 
                 })
