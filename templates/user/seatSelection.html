@@ -103,6 +103,9 @@
         </div>
 
     </div>
+    <div id="paymentDisplayDiv" style="background-color: rgba(0, 0, 0, 0.222);width: 100%;height: 100%;position: fixed;top: 0px;left: 0px;">
+        <div id="paymentDisplay" style="position: fixed;z-index: 12;top: 50%;left:50%;transform: translate(-50%, -50%);background-color: white;box-shadow: 0px 5px 10px rgba(124, 124, 124, 0.589);" class="p-5"></div>
+    </div>
 
 
 
@@ -127,62 +130,247 @@
 
 <script>
 
-    $(document).ready(function(){
+        $(document).ready(function(){
+            
+            $("#paymentDisplayDiv").hide()
 
-        $("#moveToPaymentBtn").click(function(event){
+            $("#moveToPaymentBtn").click(function(event){
 
-            event.preventDefault()
+                event.preventDefault()
 
-            let selected_seats_id = []
+                let selected_seats_id = []
 
-            $(".seat-selected").each(function(){
+                $(".seat-selected").each(function(){
 
-                let seat_id = $(this).data("seat-id")
+                    let seat_id = $(this).data("seat-id")
 
-                selected_seats_id.push(seat_id)
+                    selected_seats_id.push(seat_id)
+
+                })
+
+                result = confirm("Confirm Procced to Payment")
+                
+
+                if(result)
+                {
+                    $.ajax({
+
+                        url : "",
+                        type : "POST",
+                        data : {
+                            selected_seats : JSON.stringify(selected_seats_id),
+                            date_selected : $("#date_selected").val(),
+                            csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+                        },
+                        success : function(res){
+
+                            // Add the payment wala part here //////////////////////
+                            // /////////////////////////////////////////////////////
+
+                            if(res.status)
+                            {
+
+                                console.log("Order ID:", res.order_id);
+                                console.log("Amount:", res.amount);
+
+                                let booking = res.booking_obj;
+
+                                let seats = "";
+
+                                booking.selected_seats.forEach(function(seat) {
+                                    seats += `
+                                        <span class="badge bg-secondary me-1">
+                                            ${seat}
+                                        </span>
+                                    `;
+                                });
+
+                                $("#paymentDisplayDiv").show()
+                                $("#paymentDisplay").html(`
+
+                                    <div class="payment-card">
+
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h4 class="mb-0">Booking Summary</h4>
+                                        </div>
+
+                                        <hr>
+
+                                        <div class="small mb-2">
+                                            <strong>Date:</strong>
+                                            ${booking.booking_date}
+                                        </div>
+
+                                        <div class="small mb-2">
+                                            <strong>Seats:</strong>
+                                            <div class="mt-1">
+                                                ${seats}
+                                            </div>
+                                        </div>
+
+                                        <hr>
+
+                                        <div class="d-flex justify-content-between small">
+                                            <span>Ticket Price</span>
+                                            <span>₹${booking.total_amount}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between small mt-2">
+                                            <span>GST</span>
+                                            <span>₹${booking.total_amount_gst - booking.total_amount}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between fw-bold fs-5 mt-3">
+                                            <span>Total</span>
+                                            <span>₹${booking.total_amount_gst}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-end mt-4">
+                                            <button id="proceedToPay"
+                                                    class="btn btn-primary px-4">
+                                                Proceed to Pay ₹${booking.total_amount_gst}
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                `);
+
+                                $("#proceedToPay").click(function(){
+
+                                    // /////////////////////////////////////////////////////
+
+                                    const options = {
+
+                                        "key": res.RAZORPAY_KEY_ID,
+                                        "amount": res.amount,
+                                        "currency": "INR",
+                                        "name": "MovieTicketBookingSystem",
+                                        "description": "Payment for order # " + res.order_id,
+                                        "order_id": res.order_id,
+
+                                        "handler": function (response) {
+                                            $("#paymentDisplayDiv").hide()
+                                            console.log("Payment Successful");
+                                            console.log("Payment ID:" , response.razorpay_payment_id);
+                                            console.log("Order ID:" , response.razorpay_order_id);
+                                            console.log("Signature:" , response.razorpay_signature);
+                                            
+                                            $.ajax({
+
+                                                url : "/client/payment-success/",
+                                                type : "POST",
+                                                data : {
+                                                    razorpay_payment_id: response.razorpay_payment_id,
+                                                    razorpay_order_id: response.razorpay_order_id,
+                                                    razorpay_signature: response.razorpay_signature,
+                                                    booking_id : booking.id,
+                                                    order_id : booking.order_id,
+
+                                                    csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+                                                },
+                                                success : function(res)
+                                                {
+                                                    if (res.status) {
+
+                                                        console.log("Booking saved successfully");
+
+                                                        window.location.href = "/client/my-booking";
+
+                                                    } else {
+
+                                                        alert(res.message);
+                                                    }
+                                                }
+
+                                            })
+
+                                        },
+
+                                        "modal": {
+                                            "ondismiss": function () {
+                                                
+                                                $("#paymentDisplayDiv").show()
+                                                $("#paymentDisplay").html(`
+                                                    <div class="payment-card text-center">
+
+                                                        <h2 class="text-danger mb-3">
+                                                            Payment Cancelled
+                                                        </h2>
+
+                                                        <p>
+                                                            You closed the payment window.
+                                                            No booking has been confirmed.
+                                                        </p>
+
+                                                        <button
+                                                            class="btn btn-primary mt-3"
+                                                            onclick="location.reload()">
+                                                            Try Again
+                                                        </button>
+
+                                                    </div>
+                                                `);
+
+
+
+                                                $.ajax({
+
+                                                    url : "/client/payment-exited/",
+                                                    type : "POST",
+                                                    data : {
+                                                        booking_id : booking.id,
+                                                        order_id : booking.order_id,
+
+                                                        csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+                                                    },
+                                                    success : function(res)
+                                                    {
+                                                        console.log("Payment Exited")
+                                                    }
+
+                                                })
+
+
+
+
+
+                                                
+                                            }
+                                        }
+
+
+                                    };
+
+                                    const rzp = new Razorpay(options);
+                                    rzp.open();
+
+                                    // /////////////////////////////////////////////////////
+                                    
+                                })
+
+
+                            }
+                            else
+                            {
+                                alert(res.message)
+                            }
+
+                            
+                        }
+
+                    })
+                }
+                else
+                {
+                    alert("Error")
+                }
 
             })
 
-            result = confirm("Confirm Procced to Payment")
-            
-
-            if(result)
-            {
-                $.ajax({
-
-                    url : "",
-                    type : "POST",
-                    data : {
-                        selected_seats : JSON.stringify(selected_seats_id),
-                        date_selected : $("#date_selected").val(),
-                        csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
-                    },
-                    success : function(res){
-
-                        // Add the payment wala part here //////////////////////
-                        // /////////////////////////////////////////////////////
-
-                        console.log(res.booking_obj)
-                    }
-
-                })
-            }
-            else
-            {
-                alert("Error")
-            }
 
         })
 
-
-    })
-
-
-
-    function make_payment_confirm(text)
-    {
-
-    }
+    
 
 </script>
 

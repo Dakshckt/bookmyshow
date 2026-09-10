@@ -6,6 +6,7 @@ from datetime import datetime , timedelta
 from database.collections import shows , shows_timing , city , theater , movie , movie_type , location , screen , seats , booking
 from adminPanel.support import login_required , admin_required , client_required
 from django.contrib import messages
+from .razorpay import razorpay_order , RAZORPAY_KEY_ID
 import json
 # Create your views here.
 
@@ -266,42 +267,48 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
     if req.method == "POST":
 
         booking_date = req.POST.get("date_selected")
-
-        # print("Called from seat selection")
-        # print(booking_date , "\n\n")
-
         selected_seats = json.loads(req.POST.get("selected_seats"))
-        # print("\n\n")
-        # print(selected_seats)
-        # print("\n\n")
-
-        # Calculated Seat Function Code Part ///////////////////////////////////////
-        # //////////////////////////////////////////////////////////////////////////
-
-
         calculated_price , total_price_gst = calculate_price_func(selected_seats , booking_date)
-        payment_result = make_payment()
-
+        razorpay_order_obj = razorpay_order(total_price_gst)
+        order_id = razorpay_order_obj["id"]
 
         booking_obj = {
-
-            "user_id" : req.session["user_id"],
-            "show_timing_id" : show_timing_id,
-            "show_id" : show_id,
+            "user_id" : ObjectId(req.session["user_id"]),
+            "show_timing_id" : ObjectId(show_timing_id),
+            "show_id" : ObjectId(show_id),
             "selected_seats" : selected_seats,
-            # "payment_id" : None,
+            "payment_id" : None,
             "booking_date" : datetime.strptime(booking_date, "%Y-%m-%d"),
             "total_amount" : calculated_price,
             "total_amount_gst" : total_price_gst,
-            # "status" : "confirmed",       # Has only 3 values as 'confirmed' 'cancelled' 'available'  
+            "order_id" : order_id,
+            "status" : "pending",       # Has only 3 values as 'confirmed' 'cancelled' 'available' 'pending' 'invalid'
         }
-        print("\n\n")
-        print(booking_obj)
-        print("\n\n")
-        # No need to add this in the booking table from here fo it in the nrext payment Function 
-        # result = booking.insert_one(booking_obj)
 
-        return JsonResponse({"status" : True , "message" : "Seat Bokked" , "booking_obj" : booking_obj})
+        result = booking.insert_one(booking_obj)
+        print("\n\nBooking Added\n\n")
+        
+        if result:
+            print("\n\n Inside Result\n\n")
+            booking_obj["id"] = str(result.inserted_id)
+            booking_obj["_id"] = str(booking_obj["_id"])
+            booking_obj["user_id"] = str(booking_obj["user_id"])
+            booking_obj["show_timing_id"] = str(booking_obj["show_timing_id"])
+            booking_obj["show_id"] = str(booking_obj["show_id"])
+
+            print("\n\n")
+            print(booking_obj)
+            print("\n\n")
+
+            return JsonResponse({
+                "status" : True ,
+                "RAZORPAY_KEY_ID" : RAZORPAY_KEY_ID ,
+                "order_id" : order_id ,
+                "amount" : int(total_price_gst * 100) ,
+                "booking_obj" : booking_obj
+            })
+
+        return JsonResponse({"status" : False , "message" : "Error Encountered"})
 
 
 
@@ -316,9 +323,6 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
     for booking_obj in shows_booking:
         seat_booked_ids.extend(booking_obj["selected_seats"])
 
-    # print("\n\n\n")
-    # print(seat_booked_ids)
-    # print("\n\n\n")
 
     screen_obj = screen.find_one({"_id" : show_obj["screen_id"]})
     screen_seats_list = list(seats.find({"screen_id" : screen_obj["_id"]}))
@@ -354,8 +358,56 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
 
 
 
-def paymentFunc(req):
-    return 0
+def paymentSuccessFunc(req):
+
+    if req.method == "POST":
+
+        razorpay_payment_id = req.POST.get("razorpay_payment_id")
+        razorpay_order_id = req.POST.get("razorpay_order_id")
+        razorpay_signature = req.POST.get("razorpay_signature")
+        booking_id = req.POST.get("booking_id")
+        order_id = req.POST.get("order_id")
+
+        # print("\n\n")
+        # print(razorpay_payment_id)
+        # print(razorpay_order_id)
+        # print(razorpay_signature)
+        # print(booking_id)
+        # print(order_id)
+        # print("\n\n")
+
+        booking_obj = booking.find_one({"_id" : ObjectId(booking_id) , "order_id" : order_id})
+
+        if booking_obj:
+
+            result = booking.update_one(
+                {"_id" : booking_obj["_id"]},
+                {"$set" : {"status" : "confirmed"}}
+            )
+
+            if result:
+                booking.update_one(
+                    {"_id" : booking_obj["_id"]},
+                    {"$set" : {"status" : "invalid"}}
+                )
+                return JsonResponse({
+                    "status": True,
+                    "message": "Booking confirmed"
+                })
+
+
+            return JsonResponse({
+                "status": False,
+                "message": "Booking Updation Error"
+            })
+        
+
+        booking.update_one(
+            {"_id" : booking_obj["_id"]},
+            {"$set" : {"status" : "invalid"}}
+        )
+
+        return JsonResponse({"status" : False , "message": "Booking Object Retrival Error"})
 
 
 
@@ -363,7 +415,7 @@ def paymentFunc(req):
 @client_required
 def myBookingFunc(req):
 
-    all_booking = list(booking.find({"user_id" : ObjectId(req.session["user_id"])}))
+    all_booking = list(booking.find({"user_id" : ObjectId(req.session["user_id"]) , "status": {"$in": ["cancelled", "confirmed"]} }))
 
     expired_booking = []
     upcomming_booking = []
@@ -403,6 +455,7 @@ def myBookingFunc(req):
                 "booking_date" : booking_temp["booking_date"].date(),
                 "show_starting_time" : show_start_time.time(),
                 "total_amount" : booking_temp["total_amount"],
+                "total_amount_gst" : booking_temp["total_amount_gst"],
                 "no_of_seats" : selected_seat_arr,
                 "status" : booking_temp["status"],
             }
@@ -429,6 +482,7 @@ def myBookingFunc(req):
                 "booking_date" : booking_temp["booking_date"].date(),
                 "show_starting_time" : show_start_time.time(),
                 "total_amount" : booking_temp["total_amount"],
+                "total_amount_gst" : booking_temp["total_amount_gst"],
                 "no_of_seats" : selected_seat_arr,
                 "status" : booking_temp["status"],
             }
@@ -442,6 +496,24 @@ def myBookingFunc(req):
     return render(req , "user/myBooking.html" , {"upcomming_booking" : upcomming_booking , "expired_booking" : expired_booking , "cancelled_booking" : cancelled_booking})
 
 
+
+
+
+def paymentExitedFunc(req):
+    print("Route Called")
+    if req.method == "POST":
+
+        booking_id = req.POST.get("booking_id")
+        order_id = req.POST.get("order_id")
+
+        booking_obj = booking.find_one({"_id" : ObjectId(booking_id) , "order_id" : order_id})
+
+        booking.update_one(
+            {"_id" : booking_obj["_id"]},
+            {"$set" : {"status" : "exited"}}
+        )
+
+        return JsonResponse({"status" : True})
 
 
 def cancelSeatFunc(req):
