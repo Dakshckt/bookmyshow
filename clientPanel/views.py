@@ -15,8 +15,13 @@ import json
 def sendMovieFunc(req):
     if req.method == "POST":
         try :
+            print("send Movies Func Called")
             cityId = req.POST.get("cityId")
+            temp = city.find_one({"_id" : ObjectId(cityId)})
             req.session["user_selected_city"] = cityId
+            req.session["user_selected_cityname"] = temp["name"]
+            print("City ID:", req.session.get("user_selected_city"))
+            print("City Name:", req.session.get("user_selected_cityname"))
             all_shows = list(shows.find({"city_id" : ObjectId(cityId)}))
 
 
@@ -50,11 +55,13 @@ def sendMovieFunc(req):
 
         
         except Exception as err:
-            
+            # print("Called from the send movie func")
+            # messages.error(req , "Error in the process. Please Try Again")
             return JsonResponse({
                 "status" : False,
-                "message" : "Error in Process"
+                "message" : f"Something went wrong. Please try again." ,
             })
+            return redirect("/client/home/")
 
 
 @login_required
@@ -147,46 +154,49 @@ def movieInTheater(req , link):
 def sendDateFunc(req):
     print("\nsendDateFunc Function Called\n")
     if req.method == "POST":
-        movieId = req.POST.get("movie_id")
-        locationId = req.POST.get("location_id")
-        cityId = req.session["user_selected_city"]
 
-        major_shows = list(shows.find({"movie_id" : ObjectId(movieId) , "city_id" : ObjectId(cityId) , "location_id" : ObjectId(locationId)}))
-        all_shows = []
-        # print("\n\n")
-        # print(major_shows)
-        # print("\n\n")
+        try:
+            movieId = req.POST.get("movie_id")
+            locationId = req.POST.get("location_id")
+            cityId = req.session["user_selected_city"]
 
+            major_shows = list(shows.find({"movie_id" : ObjectId(movieId) , "city_id" : ObjectId(cityId) , "location_id" : ObjectId(locationId)}))
+            all_shows = []
+            all_dates = []
 
-        all_dates = []
+            for element in major_shows:
 
-        for element in major_shows:
+                release_date = element["release_date"]
+                release_date = release_date.date()
+                to_date = element["to_date"]
+                to_date = to_date.date()
+                current_date = datetime.now().date()
 
-            release_date = element["release_date"]
-            release_date = release_date.date()
-            to_date = element["to_date"]
-            to_date = to_date.date()
-            current_date = datetime.now().date()
+                if release_date < current_date:
+                    release_date = current_date
 
-            if release_date < current_date:
-                release_date = current_date
+                current_date = release_date
 
-            current_date = release_date
+                while current_date <= to_date:
 
-            while current_date <= to_date:
+                    if current_date not in all_dates:
+                        all_dates.append(current_date)
 
-                if current_date not in all_dates:
-                    all_dates.append(current_date)
+                    current_date += timedelta(days=1)
 
-                current_date += timedelta(days=1)
+            return JsonResponse({
+                "status" : True,
+                "all_dates" : all_dates
+            })
 
-        # print(all_dates)
+        except Exception as err:
 
-        return JsonResponse({
-            "status" : True,
-            "all_dates" : all_dates
-        })
-
+            # messages.error(req , "Something went wrong. Please try again.")
+            return JsonResponse({
+                "status" : False,
+                "message" : "Something went wrong. Please try again."
+            })
+            return redirect("/client/home/")
 
 
 @login_required
@@ -194,55 +204,64 @@ def sendDateFunc(req):
 def sendShowsFunc(req):
     print("\nsendShowsFunc Function Called\n")
     if req.method == "POST":
-        movieId = req.POST.get("movie_id")
-        locationId = req.POST.get("location_id")
-        date_selected = req.POST.get("selected_date")  # Wild Card Entry of this Selected Date
-        selected_date = datetime.strptime(
-            date_selected,
-            "%Y-%m-%d"
-        )
-        cityId = req.session["user_selected_city"]
-        
+        try:
+            movieId = req.POST.get("movie_id")
+            locationId = req.POST.get("location_id")
+            date_selected = req.POST.get("selected_date")  # Wild Card Entry of this Selected Date
+            selected_date = datetime.strptime(
+                date_selected,
+                "%Y-%m-%d"
+            )
+            cityId = req.session["user_selected_city"]
+            
 
-        major_shows = list(shows.find({"release_date" : {"$lte" : selected_date} , "to_date" : {"$gte" : selected_date} , "movie_id" : ObjectId(movieId) , "city_id" : ObjectId(cityId) , "location_id" : ObjectId(locationId)}))
-        all_shows = []
+            major_shows = list(shows.find({"release_date" : {"$lte" : selected_date} , "to_date" : {"$gte" : selected_date} , "movie_id" : ObjectId(movieId) , "city_id" : ObjectId(cityId) , "location_id" : ObjectId(locationId)}))
+            all_shows = []
 
-        for element in major_shows:
+            for element in major_shows:
 
-            show_timming_list = list(shows_timing.find({"shows_id" : element["_id"]}))
-          
-            show_timming_obj_list = []
-            for temp in show_timming_list:
-                show_timming_obj = {
-                    "show_id" : str(temp["shows_id"]),
-                    "show_timming_id" : str(temp["_id"]),
-                    "starting_time" : temp["start_time"],
-                    "ending_time" : temp["end_time"]
+                show_timming_list = list(shows_timing.find({"shows_id" : element["_id"]}))
+            
+                show_timming_obj_list = []
+                for temp in show_timming_list:
+                    show_timming_obj = {
+                        "show_id" : str(temp["shows_id"]),
+                        "show_timming_id" : str(temp["_id"]),
+                        "starting_time" : temp["start_time"],
+                        "ending_time" : temp["end_time"]
+                    }
+                    show_timming_obj_list.append(show_timming_obj)
+
+                theaterObj = theater.find_one({"_id" : element["theater_id"]})
+                screenObj = screen.find_one({"_id" : element["screen_id"]})
+
+                obj = {
+                    "theater_id" : str(theaterObj["_id"]),
+                    "theater_name" : str(theaterObj["name"]),
+                    "screen_id" : str(screenObj["_id"]),
+                    "screen_name" : str(screenObj["name"]),
+                    "shows_timmings" : show_timming_obj_list,
+                    
                 }
-                show_timming_obj_list.append(show_timming_obj)
 
-            theaterObj = theater.find_one({"_id" : element["theater_id"]})
-            screenObj = screen.find_one({"_id" : element["screen_id"]})
+                all_shows.append(obj)
 
-            obj = {
-                "theater_id" : str(theaterObj["_id"]),
-                "theater_name" : str(theaterObj["name"]),
-                "screen_id" : str(screenObj["_id"]),
-                "screen_name" : str(screenObj["name"]),
-                "shows_timmings" : show_timming_obj_list,
-                
-            }
+            return JsonResponse({
+                "status" : True,
+                "show_timming" : all_shows
+            })
+        
+        except Exception as err:
+            # messages.error(req , "Something went wrong. Please try again.")
+            return JsonResponse({
+                "status" : False,
+                "message" : "Something went wrong. Please try again."
+            })
+            return redirect("/client/home/")
 
-            all_shows.append(obj)
 
-        return JsonResponse({
-            "status" : True,
-            "show_timming" : all_shows
-        })
-    
-
-def make_payment():
-    return True
+# def make_payment():
+#     return True
 
 def calculate_price_func(selected_seats , booking_date):
 
@@ -266,49 +285,56 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
     # print(date_selected , "\n\n")
     if req.method == "POST":
 
-        booking_date = req.POST.get("date_selected")
-        selected_seats = json.loads(req.POST.get("selected_seats"))
-        calculated_price , total_price_gst = calculate_price_func(selected_seats , booking_date)
-        razorpay_order_obj = razorpay_order(total_price_gst)
-        order_id = razorpay_order_obj["id"]
+        try:
+            booking_date = req.POST.get("date_selected")
+            selected_seats = json.loads(req.POST.get("selected_seats"))
+            calculated_price , total_price_gst = calculate_price_func(selected_seats , booking_date)
+            razorpay_order_obj = razorpay_order(total_price_gst)
+            order_id = razorpay_order_obj["id"]
 
-        booking_obj = {
-            "user_id" : ObjectId(req.session["user_id"]),
-            "show_timing_id" : ObjectId(show_timing_id),
-            "show_id" : ObjectId(show_id),
-            "selected_seats" : selected_seats,
-            "payment_id" : None,
-            "booking_date" : datetime.strptime(booking_date, "%Y-%m-%d"),
-            "total_amount" : calculated_price,
-            "total_amount_gst" : total_price_gst,
-            "order_id" : order_id,
-            "status" : "pending",       # Has only 3 values as 'confirmed' 'cancelled' 'available' 'pending' 'invalid'
-        }
+            booking_obj = {
+                "user_id" : ObjectId(req.session["user_id"]),
+                "show_timing_id" : ObjectId(show_timing_id),
+                "show_id" : ObjectId(show_id),
+                "selected_seats" : selected_seats,
+                "payment_id" : None,
+                "booking_date" : datetime.strptime(booking_date, "%Y-%m-%d"),
+                "total_amount" : calculated_price,
+                "total_amount_gst" : total_price_gst,
+                "order_id" : order_id,
+                "status" : "pending",       # Has only 3 values as 'confirmed' 'cancelled' 'available' 'pending' 'invalid'
+            }
 
-        result = booking.insert_one(booking_obj)
-        print("\n\nBooking Added\n\n")
-        
-        if result:
-            print("\n\n Inside Result\n\n")
-            booking_obj["id"] = str(result.inserted_id)
-            booking_obj["_id"] = str(booking_obj["_id"])
-            booking_obj["user_id"] = str(booking_obj["user_id"])
-            booking_obj["show_timing_id"] = str(booking_obj["show_timing_id"])
-            booking_obj["show_id"] = str(booking_obj["show_id"])
+            result = booking.insert_one(booking_obj)
+            print("\n\nBooking Added\n\n")
+            
+            if result:
+                print("\n\n Inside Result\n\n")
+                booking_obj["id"] = str(result.inserted_id)
+                booking_obj["_id"] = str(booking_obj["_id"])
+                booking_obj["user_id"] = str(booking_obj["user_id"])
+                booking_obj["show_timing_id"] = str(booking_obj["show_timing_id"])
+                booking_obj["show_id"] = str(booking_obj["show_id"])
 
-            print("\n\n")
-            print(booking_obj)
-            print("\n\n")
+                print("\n\n")
+                print(booking_obj)
+                print("\n\n")
 
-            return JsonResponse({
-                "status" : True ,
-                "RAZORPAY_KEY_ID" : RAZORPAY_KEY_ID ,
-                "order_id" : order_id ,
-                "amount" : int(total_price_gst * 100) ,
-                "booking_obj" : booking_obj
-            })
+                return JsonResponse({
+                    "status" : True ,
+                    "RAZORPAY_KEY_ID" : RAZORPAY_KEY_ID ,
+                    "order_id" : order_id ,
+                    "amount" : int(total_price_gst * 100) ,
+                    "booking_obj" : booking_obj
+                })
 
-        return JsonResponse({"status" : False , "message" : "Error Encountered"})
+            return JsonResponse({"status" : False , "message" : "Error Encountered"})
+
+
+        except Exception as err:
+            print("Call from the print above the messages.error")
+            print("call from the print below the messages.error")
+            return JsonResponse({"status" : False , "message" : "Payment could not be processed. Please try again."})
 
 
 
@@ -342,7 +368,8 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
            "column" : temp_seats["column"],
            "name" : temp_seats["name"],
            "type" : temp_seats["type"],
-           "status" : status
+           "status" : status,
+           "price" : temp_seats["price"]
         }
 
         row = temp_seats["row"]
@@ -358,56 +385,57 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
 
 
 
+@login_required
+@client_required
 def paymentSuccessFunc(req):
 
     if req.method == "POST":
 
-        razorpay_payment_id = req.POST.get("razorpay_payment_id")
-        razorpay_order_id = req.POST.get("razorpay_order_id")
-        razorpay_signature = req.POST.get("razorpay_signature")
-        booking_id = req.POST.get("booking_id")
-        order_id = req.POST.get("order_id")
+        try:
+            razorpay_payment_id = req.POST.get("razorpay_payment_id")
+            razorpay_order_id = req.POST.get("razorpay_order_id")
+            razorpay_signature = req.POST.get("razorpay_signature")
+            booking_id = req.POST.get("booking_id")
+            order_id = req.POST.get("order_id")
 
-        # print("\n\n")
-        # print(razorpay_payment_id)
-        # print(razorpay_order_id)
-        # print(razorpay_signature)
-        # print(booking_id)
-        # print(order_id)
-        # print("\n\n")
+            booking_obj = booking.find_one({"_id" : ObjectId(booking_id) , "order_id" : order_id})
 
-        booking_obj = booking.find_one({"_id" : ObjectId(booking_id) , "order_id" : order_id})
+            if booking_obj:
 
-        if booking_obj:
+                result = booking.update_one(
+                    {"_id" : booking_obj["_id"]},
+                    {"$set" : {"status" : "confirmed" , "payment_id" : razorpay_payment_id}}
+                )
 
-            result = booking.update_one(
+                if result.modified_count == 1:
+                    
+                    return JsonResponse({
+                        "status": True,
+                        "message": "Booking confirmed"
+                    })
+
+
+                return JsonResponse({
+                    "status": False,
+                    "message": "Booking Updation Error"
+                })
+            
+
+            booking.update_one(
                 {"_id" : booking_obj["_id"]},
-                {"$set" : {"status" : "confirmed"}}
+                {"$set" : {"status" : "invalid"}}
             )
 
-            if result:
-                booking.update_one(
-                    {"_id" : booking_obj["_id"]},
-                    {"$set" : {"status" : "invalid"}}
-                )
-                return JsonResponse({
-                    "status": True,
-                    "message": "Booking confirmed"
-                })
+            return JsonResponse({"status" : False , "message": "Booking Object Retrival Error"})
 
 
+        except Exception as err:
+
+            print("Payment Success Error:", err)
             return JsonResponse({
                 "status": False,
-                "message": "Booking Updation Error"
+                "message": "Something went wrong while confirming your booking."
             })
-        
-
-        booking.update_one(
-            {"_id" : booking_obj["_id"]},
-            {"$set" : {"status" : "invalid"}}
-        )
-
-        return JsonResponse({"status" : False , "message": "Booking Object Retrival Error"})
 
 
 
@@ -415,7 +443,8 @@ def paymentSuccessFunc(req):
 @client_required
 def myBookingFunc(req):
 
-    all_booking = list(booking.find({"user_id" : ObjectId(req.session["user_id"]) , "status": {"$in": ["cancelled", "confirmed"]} }))
+    all_booking = list(booking.find({"user_id" : ObjectId(req.session["user_id"]) , "status": {"$in": ["cancel", "confirmed"]} }))
+
 
     expired_booking = []
     upcomming_booking = []
@@ -492,6 +521,11 @@ def myBookingFunc(req):
             else:
                 upcomming_booking.append(booking_obj)
 
+        # print("\n\n")
+        # print(upcomming_booking)
+        # print("\n\n")
+        # print(expired_booking)
+        # print("\n\n")
 
     return render(req , "user/myBooking.html" , {"upcomming_booking" : upcomming_booking , "expired_booking" : expired_booking , "cancelled_booking" : cancelled_booking})
 

@@ -50,6 +50,16 @@
     opacity: 0.5;
 }
 
+.priceDisplayOffBox{
+    display: none;
+}
+
+.priceDisplayOnBox{
+    display: block;
+}
+
+
+
 </style>
 
 
@@ -76,14 +86,15 @@
                     
                         {% if seat.status == "confirmed" %}
                         
-                            <div class="seat seat-banned seat-disabled" data-seat-id="{{ seat.id }}" aria-disabled="">
+                            <div id="" class="seat seatDisplayDiv seat-banned seat-disabled" data-seat-price="{{ seat.price }}" data-seat-id="{{ seat.id }}" aria-disabled="">
                                 {{ seat.name }}
                             </div>
                         
                         {% else %}
                             
-                            <div class="seat" data-seat-id="{{ seat.id }}">
-                                {{ seat.name }}
+                            <div id="" class="seat seatDisplayDiv" style="position: relative;" data-seat-price="{{ seat.price }}" data-seat-id="{{ seat.id }}">
+                                <p>{{ seat.name }}</p>
+                                <div id="" style="position: absolute; top: 0%; left: 50%; transform: translate(-50% , -50%);white-space: nowrap;" class="priceDisplayBox rounded-1 px-2 py-1 bg-primary text text-light"><i class="fa-solid fa-indian-rupee-sign"></i> {{ seat.price }}</div>
                             </div>
                         {% endif %}
                         
@@ -96,6 +107,12 @@
         {% endfor %}
         <div class="col-12" style="display: flex;justify-content: center;align-items: center;">
             <img src="{% static  'images/Screen.png' %}" alt="All Eyes This Direction">
+        </div>
+        <div class="pt-3">
+            <div style="font-size: larger;text-transform: uppercase;" class="fw-bolder">
+                Total Cost : <span style="font-size: larger" id="displayAmount">0</span>
+            </div>
+            <p>Lorem ipsum dolor sit amet (without GST & charges).</p>
         </div>
         <hr class="mt-5 mb-3">
         <div class="col-12 d-flex justify-content-end mb-5">
@@ -115,16 +132,53 @@
 <script>
 
     const seat = document.querySelectorAll(".seat")
+    const displayAmount = document.querySelector("#displayAmount")
+    let textAmount = 0
 
     seat.forEach(element => {
-        
         element.addEventListener('click' , function(){
 
             this.classList.toggle("seat-selected");
+            let tempSeatPrice = Number(this.dataset.seatPrice)
+            
+            if(this.classList.contains("seat-selected"))
+            {
+                textAmount += tempSeatPrice   
+            }
+            else
+            {
+                textAmount -= tempSeatPrice
+            }
+
+            displayAmount.innerHTML = textAmount
 
         })
-
     });
+   
+    
+    // Generated From AI Chatgpt
+    // document.querySelectorAll(".seatDisplayDiv").forEach(function(seat) {
+
+    //     seat.querySelector(".priceDisplayBox").classList.add("priceDisplayOffBox");
+
+    //     seat.addEventListener("mouseleave", function() {
+
+    //         this.querySelector(".priceDisplayBox").classList.add("priceDisplayOffBox");
+
+    //         this.querySelector(".priceDisplayBox").classList.remove("priceDisplayOnBox");
+
+    //     });
+
+    //     seat.addEventListener("mouseenter", function() {
+
+    //         this.querySelector(".priceDisplayBox").classList.add("priceDisplayOnBox");
+
+    //         this.querySelector(".priceDisplayBox").classList.remove("priceDisplayOffBox");
+
+    //     });
+  
+
+    // });
 
 </script>
 
@@ -180,7 +234,7 @@
                                 booking.selected_seats.forEach(function(seat) {
                                     seats += `
                                         <span class="badge bg-secondary me-1">
-                                            ${seat}
+                                            ${seat} :
                                         </span>
                                     `;
                                 });
@@ -229,6 +283,10 @@
                                             <button id="proceedToPay"
                                                     class="btn btn-primary px-4">
                                                 Proceed to Pay ₹${booking.total_amount_gst}
+                                            </button>
+                                            <button id="cancelPaymentProceed"
+                                                    class="btn btn-outline-danger px-4 ms-2">
+                                                    cancel
                                             </button>
                                         </div>
 
@@ -333,7 +391,6 @@
 
 
 
-
                                                 
                                             }
                                         }
@@ -346,6 +403,13 @@
 
                                     // /////////////////////////////////////////////////////
                                     
+                                })
+
+
+                                $("#cancelPaymentProceed").click(function()
+                                {
+                                    $("#paymentDisplay").html(``)
+                                    $("#paymentDisplayDiv").hide()
                                 })
 
 
@@ -362,7 +426,7 @@
                 }
                 else
                 {
-                    alert("Error")
+                    // alert("Error")
                 }
 
             })

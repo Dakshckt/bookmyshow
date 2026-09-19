@@ -19,9 +19,11 @@
         {% csrf_token %}
         <label for="citySelect" class="h3 fw-bold">SELECT CITY</label>
         <select name="citySelect" id="citySelect" class="px-4 py-2 border border-dark-500 rounded-lg">
-            <option value="null">Select</option>
+            <option value="">Select</option>
             {% for city in cities %}
-            <option value="{{ city.id }}">{{ city.name }}</option>
+            <option value="{{ city.id }}"
+                {% if request.session.user_selected_city == city.id|stringformat:"s" %}selected{% endif %}
+                >{{ city.name }}</option>
             {% endfor %}
         </select>
         
@@ -31,7 +33,7 @@
         <div class="row" id="allCardsDiv">
 
             {% for movie in movies %}
-                <div class="col-3 col-sm-4 col-6 transition-all duration-300 ease-out hover:scale-95 hover:-translate-y-2 hover:shadow-2xl hover:bg-gray-100 hover:z-10 rounded-lg" id="card">
+                <div class="col-3 col-sm-4 col-12 transition-all duration-300 ease-out hover:scale-95 hover:-translate-y-2 hover:shadow-2xl hover:bg-gray-100 hover:z-10 rounded-lg" id="card">
                     <div id="card_part1">
                         <img src="/media/{{ movie.poster }}" alt="err" >
                     </div>
@@ -55,12 +57,18 @@
 <style>
 
 @media (max-width: 1000px) {
-    #bookBtn {
+    /* #bookBtn {
         margin-top: 20px;
     }
 
     #movie_details p{
         display : none;
+    } */
+
+    #card{
+        border: 1px solid rgb(255, 130, 130);
+        /* scale: 0.95; */
+        margin-bottom: 10px;
     }
 }
 
@@ -89,14 +97,35 @@
 
         console.log("Home Page Client")
 
+        let cityIdElementTemp = $("#citySelect").val()
+        
+        if(cityIdElementTemp)
+        {
+            console.log(cityIdElementTemp)
+            console.log("City id element tmep condition is true")
+            loadMoviesFromCityFunc(cityIdElementTemp)
+        }
+        
+
+
         $("#citySelect").change(function(event){
 
             event.preventDefault()
+            cityIdElement = $("#citySelect").val()
+            loadMoviesFromCityFunc(cityIdElement)
+
+        })
+
+
+
+        function loadMoviesFromCityFunc(cityIdElement)
+        {
+
             $.ajax({
                 url : "/client/send-movies/",
                 type : "POST",
                 data : {
-                    cityId : $("#citySelect").val(),
+                    cityId : cityIdElement,
                     csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val()
                 },
                 success : function(res)
@@ -113,7 +142,7 @@
                         movies.forEach(movie => {
 
                             all_cards_div.append(`
-                                <div class="col-3 col-sm-4 col-6 transition-all duration-300 ease-out hover:scale-95 hover:-translate-y-2 hover:shadow-2xl hover:bg-gray-100 hover:z-10 rounded-lg" id="card">
+                                <div class="col-3 col-sm-4 col-12 transition-all duration-300 ease-out hover:scale-95 hover:-translate-y-2 hover:shadow-2xl hover:bg-gray-100 hover:z-10 rounded-lg" id="card">
                                     <div id="card_part1">
                                         <img src="/media/${ movie.poster }" alt="err" >
                                     </div>
@@ -138,8 +167,7 @@
                 }
             })
 
-        })
-
+        }
     })
 
 </script>
