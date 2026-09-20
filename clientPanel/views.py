@@ -268,14 +268,16 @@ def calculate_price_func(selected_seats , booking_date):
     # Calculate discount and 18% GST part in the calculation as well 
 
     selected_seats_obj = []
+    selected_seats_obj_names = []
     total_amount = 0 
     for val in selected_seats:
         selected_seats_obj = seats.find_one({"_id" : ObjectId(val)})
         total_amount += selected_seats_obj["price"]
+        selected_seats_obj_names.append([selected_seats_obj["name"] , selected_seats_obj["type"]])
 
     GST_price = total_amount * 1.18
     
-    return total_amount , GST_price
+    return total_amount , GST_price , selected_seats_obj_names
 
 
 @login_required
@@ -288,7 +290,7 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
         try:
             booking_date = req.POST.get("date_selected")
             selected_seats = json.loads(req.POST.get("selected_seats"))
-            calculated_price , total_price_gst = calculate_price_func(selected_seats , booking_date)
+            calculated_price , total_price_gst , selected_seats_obj_names = calculate_price_func(selected_seats , booking_date)
             razorpay_order_obj = razorpay_order(total_price_gst)
             order_id = razorpay_order_obj["id"]
 
@@ -297,6 +299,7 @@ def seatSelectionFunc(req , show_id , show_timing_id , date_selected):
                 "show_timing_id" : ObjectId(show_timing_id),
                 "show_id" : ObjectId(show_id),
                 "selected_seats" : selected_seats,
+                "selected_seats_names" : selected_seats_obj_names,
                 "payment_id" : None,
                 "booking_date" : datetime.strptime(booking_date, "%Y-%m-%d"),
                 "total_amount" : calculated_price,

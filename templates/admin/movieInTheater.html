@@ -5,60 +5,81 @@
 
 <h3 class="h3 p-2">Alot Movie in Theater</h3><hr>
 
-<form id="movieInTheaterForm" method="POST" style="display: flex;">
-    
-    {% csrf_token %}
 
-    <div id="firstDiv">
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
 
-        <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
-            <option value="null">Select city</option>
-            {% for city in cities %}
-            <option value="{{city.id}}">{{city.name}}</option>
-            {% endfor %}
-        </select><br>
-            
-        <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-            <option value="null">Select location</option>
-        </select><br>
-        
-                
-        <select name="theaterSelect" id="theaterSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-            <option value="null">Select theater</option>
-        </select><br>
-        
+                                
+                <form id="movieInTheaterForm" method="POST" style="display: flex;">
                     
-        <select name="screenSelect" id="screenSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-            <option value="null">Select theater</option>
-        </select><br>
+                    {% csrf_token %}
+
+                    <div id="firstDiv">
+
+                        <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 ms-2">
+                            <option value="null">Select city</option>
+                            {% for city in cities %}
+                            <option value="{{city.id}}">{{city.name}}</option>
+                            {% endfor %}
+                        </select><br>
+                            
+                        <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                            <option value="null">Select location</option>
+                        </select><br>
                         
-                    
-        <select name="movieSelect" id="movieSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-            <option value="null">Select Movie</option>
-            {% for movie in movies %}
-            <option value="{{movie.id}}">{{movie.name}}</option>
-            {% endfor %}
-        </select><br>
+                                
+                        <select name="theaterSelect" id="theaterSelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                            <option value="null">Select theater</option>
+                        </select><br>
+                        
+                                    
+                        <select name="screenSelect" id="screenSelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                            <option value="null">Select theater</option>
+                        </select><br>
+                                        
+                                    
+                        <select name="movieSelect" id="movieSelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                            <option value="null">Select Movie</option>
+                            {% for movie in movies %}
+                            <option value="{{movie.id}}">{{movie.name}}</option>
+                            {% endfor %}
+                        </select><br>
 
-        <input type="date" name="releaseDate" id="releaseDate" placeholder="Enter the Release Date" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+                        <input type="date" name="releaseDate" id="releaseDate" placeholder="Enter the Release Date" class="border border-black px-3 py-2 mt-4 ms-2"><br>
 
-        <input type="date" name="toDate" id="toDate" placeholder="Enter the Closing Date" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+                        <input type="date" name="toDate" id="toDate" placeholder="Enter the Closing Date" class="border border-black px-3 py-2 mt-4 ms-2"><br>
 
-        <input type="button" id="nextButton" value="Next" class="btn btn-primary px-3 mt-4 ms-2 px-5">
+                        <input type="button" id="nextButton" value="Next" class="btn btn-primary px-3 mt-4 ms-2 px-5">
 
 
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+        <div class="col-md-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
+
+                <div id="secondDiv" style="display: none;">
+                    <input type="number" placeholder="Enter the number of shows" name="noOfShow" id="noOfShow" class="border border-black px-3 py-2 mt-2 ms-2"><br><Br>
+                    <input type="button" id="enterButton" value="Enter" class="border border-black px-3 py-2 mt-2 ms-2"><br><Br>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
+
+                Display
+
+            </div>
+        </div>
     </div>
+</div>
 
-
-    <div id="secondDiv" style="display: none;padding-left: 50px;">
-
-        <input type="number" placeholder="Enter the number of shows" name="noOfShow" id="noOfShow" class="border border-black px-3 py-2 mt-4 ms-2"><br><Br>
-        <input type="button" id="enterButton" value="Enter" class="border border-black px-3 py-2 mt-4 ms-2"><br><Br>
-    </div>
-
-    
-
-</form>
 
 <script src="{% static 'js/adminPanel.js' %}"></script>
 
@@ -87,6 +108,8 @@
 
     document.querySelector("#enterButton").addEventListener('click' , function(){
 
+        // document.querySelector("#secondDiv").innerHTML = ""
+
         console.log("enter buttom clicked")
         document.querySelector("#enterButton").disabled = true
         let no_of_entry = parseInt(document.querySelector("#noOfShow").value)
@@ -94,12 +117,12 @@
         for(let i = 0 ; i < no_of_entry ; i++)
         {
                document.querySelector("#secondDiv").innerHTML += `
-                    <input type='time' name='showTime' id='showTime'><Br><Br>
+                    <input type='time' class='border border-secondary ms-2' name='showTime' id='showTime'><Br><Br>
                `
         }
 
         document.querySelector("#secondDiv").innerHTML += `
-            <input type="submit" value="Add" id="addbtn" class="btn btn-primary px-5"><br><br>
+            <input type="submit" value="Add" id="addbtn" class="btn btn-primary px-5 ms-2"><br><br>
             <p id="result"></p>
         `
 

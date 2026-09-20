@@ -226,15 +226,16 @@
 
                                 console.log("Order ID:", res.order_id);
                                 console.log("Amount:", res.amount);
+                                console.log("Amount:", res.booking_obj);
 
                                 let booking = res.booking_obj;
 
                                 let seats = "";
 
-                                booking.selected_seats.forEach(function(seat) {
+                                booking.selected_seats_names.forEach(function(seat) {
                                     seats += `
                                         <span class="badge bg-secondary me-1">
-                                            ${seat} :
+                                            ${seat[0]} : ${seat[1]}
                                         </span>
                                     `;
                                 });

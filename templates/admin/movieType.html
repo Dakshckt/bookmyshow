@@ -4,59 +4,77 @@
 
 <h3 class="h3 p-2">Movie Type Page</h3><hr>
 
-<form id="movieTypeForm" method="post">
 
-    {% csrf_token %}
-    <input type="text" name="movieTypeName" id="movieTypeName" placeholder="Enter Name of the movieType" class="border border-black px-3 py-2 mt-4 ms-2">
-    <br><input type="submit" name="submit" value="Add movieType" class="btn btn-primary px-3 mt-4 ms-2 px-5">
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
+                                
+                <form id="movieTypeForm" method="post">
 
-    <br><Br><Br>
-    <p id="result"></p>
+                    {% csrf_token %}
+                    <input type="text" name="movieTypeName" id="movieTypeName" placeholder="Enter Name of the movieType" class="border border-black px-3 py-2 mt-4 ms-2">
+                    <br><input type="submit" name="submit" value="Add movieType" class="btn btn-primary px-3 mt-4 ms-2 px-5">
 
-    <br><Br><br>
-    <ul>
-        {% for movieType in movieTypes %}
-            <li>{{movieType.name}}</li>
-        {% endfor %}
-    </ul>
+                    <br><Br><Br>
+                    <p id="result"></p>
+
+                </form>
+
+            </div>
+        </div>
+        <div class="col-sm-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
+
+                <ul>
+                    {% for movieType in movieTypes %}
+                        <li class="alert alert-warning">{{movieType.name}}</li>
+                    {% endfor %}
+                </ul>
 
 
-    <script>
+            </div>
+        </div>
+    </div>
+</div>
 
-        $(document).ready(function(){
 
-            console.log("Movie Type Page")
 
-            $("#movieTypeForm").submit(function(event){
+<script>
 
-                event.preventDefault()
+    $(document).ready(function(){
 
-                $.ajax({
-                    url : "",
-                    type : "POST",
-                    data : $(this).serialize(),
-                    success : function(res){
+        console.log("Movie Type Page")
 
-                        if(res.status == true)
-                        {
-                            $("#result").html(`<p class="alert alert-success">${res.message}</p>`) 
-                            $("#movieTypeName").val('')
-                        }
-                        else
-                        {
-                            $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
-                        }
+        $("#movieTypeForm").submit(function(event){
 
+            event.preventDefault()
+
+            $.ajax({
+                url : "",
+                type : "POST",
+                data : $(this).serialize(),
+                success : function(res){
+
+                    if(res.status == true)
+                    {
+                        $("#result").html(`<p class="alert alert-success">${res.message}</p>`) 
+                        $("#movieTypeName").val('')
                     }
-                })
+                    else
+                    {
+                        $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
+                    }
 
+                }
             })
 
         })
 
-    </script>
+    })
 
-</form>
+</script>
+
 
 {% endblock %}
 

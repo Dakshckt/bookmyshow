@@ -2,26 +2,50 @@
 
 {% block content %}
 
+<style>
+
+
+
+</style>
+
 <h3 class="h3 p-2">Movies Page</h3><hr>
 
-<form id="movieForm" method="post" enctype="multipart/form-data">
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
 
-    {% csrf_token %}
-    <input type="text" name="name" id="name" placeholder="Enter the Name" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-    <textarea name="desc" id="desc" placeholder="Enter the description" class="border border-black px-3 py-2 mt-4 ms-2"></textarea><br>
-    <input type="file" name="poster" id="poster" placeholder="Select any file" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-    <select name="movieTypeSelect" id="movieTypeSelect" multiple class="border border-black px-3 py-2 mt-4 ms-2">
-        {% for movie_type in movies_type %}
-            <option value="{{movie_type.id}}">{{movie_type.name}}</option>
-        {% endfor %}
-    </select><br>
-    <input type="number" name="duration" id="duration" placeholder="Enter the duration in minutes" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-        
-    <input type="submit" name="submit" value="Add Movie" class="btn btn-primary px-3 mt-4 ms-2 px-5"><br><Br><br>
+                <form id="movieForm" method="post" enctype="multipart/form-data">
 
-    <p id="result"></p>
+                    {% csrf_token %}
+                    <input type="text" name="name" id="name" placeholder="Enter the Name" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+                    <textarea name="desc" id="desc" placeholder="Enter the description" class="border border-black px-3 py-2 mt-4 ms-2"></textarea><br>
+                    <input type="file" name="poster" id="poster" placeholder="Select any file" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+                    <select name="movieTypeSelect" id="movieTypeSelect" multiple class="border border-black px-3 py-2 mt-4 ms-2">
+                        {% for movie_type in movies_type %}
+                            <option value="{{movie_type.id}}">{{movie_type.name}}</option>
+                        {% endfor %}
+                    </select><br>
+                    <input type="number" name="duration" id="duration" placeholder="Enter the duration in minutes" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+                        
+                    <input type="submit" name="submit" value="Add Movie" class="btn btn-primary px-3 mt-4 ms-2 px-5"><br><Br><br>
 
-</form>
+                    <p id="result"></p>
+
+                </form>
+
+            </div>
+        </div>
+        <div class="col-sm-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
+
+                Display
+
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
 

@@ -10,7 +10,6 @@ from .info_gather import sendLocation , sendTheater , sendScreen
 fs = FileSystemStorage(location = "media/movies")
 
 
-
 @login_required
 @admin_required
 def cityFunc(req):

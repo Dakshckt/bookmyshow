@@ -6,42 +6,58 @@
 <h3 class="h3 p-2">Seats Page</h3><hr>
 
 
-<form id="seatForm" method="post">
-    {% csrf_token %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
+            
+                <form id="seatForm" method="post">
+                    {% csrf_token %}
 
-<!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
-    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
-        <option value="null">Select city</option>
-        {% for city in cities %}
-        <option value="{{city.id}}">{{city.name}}</option>
-        {% endfor %}
-    </select><br>
-        
-    <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-        <option value="null">Select location</option>
-    </select><br>
+                <!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
+                    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                        <option value="null">Select city</option>
+                        {% for city in cities %}
+                        <option value="{{city.id}}">{{city.name}}</option>
+                        {% endfor %}
+                    </select><br>
+                        
+                    <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                        <option value="null">Select location</option>
+                    </select><br>
+                                        
+                    <select name="theaterSelect" id="theaterSelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                    <option value="null">Select theater</option>
+                    </select><br>
+
+                    <select name="screenSelect" id="screenSelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                    <option value="null">Select Screen</option>
+                    </select><br>
+
+                    <input type="number" name="row" id="row" placeholder="Enter the number of rows" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+                    <input type="number" name="seats_per_row" id="seats_per_row" placeholder="Enter the number of seats per Row" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+                    <input type="button" value="generate" id="generate" class="btn btn-primary px-3 mt-4 ms-2 px-5"><br><br>
+                    
+                </form>
+
+            </div>
+        </div>
+        <div class="col-md-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
+                <div id="seatFormDiv">
     
-    
-    <select name="theaterSelect" id="theaterSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-    <option value="null">Select theater</option>
-    </select><br>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
 
+                Display
 
-    <select name="screenSelect" id="screenSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-    <option value="null">Select Screen</option>
-    </select><br>
-
-
-
-    
-    <input type="number" name="row" id="row" placeholder="Enter the number of rows" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-    <input type="number" name="seats_per_row" id="seats_per_row" placeholder="Enter the number of seats per Row" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-    <input type="button" value="generate" id="generate" class="btn btn-primary px-3 mt-4 ms-2 px-5"><br><br>
-    <div id="seatFormDiv">
-
+            </div>
+        </div>
     </div>
-    
-</form>
+</div>
 
 
 
@@ -87,7 +103,7 @@
     seatForm = document.querySelector("#seatForm")
 
     generateBtn.addEventListener('click' , ()=>{
-        
+        seatFormDiv.innerHTML = ""
         let row = Number(document.querySelector("#row").value)
         
         for(let i = 0 ; i < row ; i++)
@@ -95,7 +111,7 @@
             let alphabet = String.fromCharCode(65 + i)
             
             seatFormDiv.innerHTML += `
-                <label class="ps-2">Type of ${alphabet} Row</label>
+                <br><label class="ps-2">Type of ${alphabet} Row</label><br>
                 <select name="rowType" id="rowType" class="border border-black px-3 py-2 mt-4 ms-2">
                     <option value="VIP">VIP</option>
                     <option value="Gold">Gold</option>

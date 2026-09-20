@@ -6,28 +6,47 @@
 <h3 class="h3 p-2">Theater Page</h3><hr>
 
 
-<form id="theaterForm" method="POST">
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
 
-    {% csrf_token %}
-<!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
-    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
-        <option value="null">Select city</option>
-        {% for city in cities %}
-        <option value="{{city.id}}">{{city.name}}</option>
-        {% endfor %}
-    </select><br>
-        
-    <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-        <option value="null">Select location</option>
-    </select><br>
+                <form id="theaterForm" method="POST">
 
-    <input type="text" name="theaterName" id="theaterName" placeholder="Enter the Name of Theater" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+                    {% csrf_token %}
+                <!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
+                    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                        <option value="null">Select city</option>
+                        {% for city in cities %}
+                        <option value="{{city.id}}">{{city.name}}</option>
+                        {% endfor %}
+                    </select><br>
 
-    <input type="submit" value="submit" name="submit" class="btn btn-primary px-3 mt-4 ms-2 px-5">
+                    <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
+                        <option value="null">Select location</option>
+                    </select><br>
 
-    <br><br><Br><p id="result"></p>
+                    <input type="text" name="theaterName" id="theaterName" placeholder="Enter the Name of Theater" class="border border-black px-3 py-2 mt-4 ms-2"><br>
 
-</form>
+                    <input type="submit" value="submit" name="submit" class="btn btn-primary px-3 mt-4 ms-2 px-5">
+
+                    <br><br><Br><p id="result"></p>
+
+                </form>
+
+            </div>
+        </div>
+        <div class="col-md-6 col-12 parentBoxDesign">
+            <div class="boxDesign">
+
+                Display
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
 <script src="{% static 'js/adminPanel.js' %}"></script>

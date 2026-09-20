@@ -11,6 +11,7 @@
     <title>Dashboard - SB Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/extraStyle.css' %}">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
@@ -89,7 +90,7 @@
 
                             {% if request.session.user_id %}
                             {% if request.session.user_status %}
-                            <a class="nav-link" href="/home">home</a>
+                            <a class="nav-link" href="/home">Home</a>
                             <a class="nav-link" href="/city">City</a>
                             <a class="nav-link" href="/location">Location</a>
                             <a class="nav-link" href="/theater">Theater</a>

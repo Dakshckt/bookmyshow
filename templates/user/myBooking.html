@@ -73,6 +73,11 @@
     }
 }
 
+.row > *{
+    padding-right: calc(var(--bs-gutter-x) * 0.5);
+    padding-left: calc(var(--bs-gutter-x) * 0.5);
+}
+
 </style>
 
 <div class="container">
@@ -240,25 +245,35 @@
 
             let booking_id = $(this).data("id");
 
-            alert("Confirm Cancel the ticket")
+            result = confirm("Confirm Cancel the ticket")
+            console.log(result)
 
-            $.ajax({
-                url : "/client/cancel-seat/",
-                type : "POST",
-                data : {
-                    "booking_id" : booking_id,
-                    csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val() 
-                },
-                success : function(res)
-                {
-                    alert(res.message)
-                    if(res.message)
+            if(result)
+            {            
+    
+                $.ajax({
+                    url : "/client/cancel-seat/",
+                    type : "POST",
+                    data : {
+                        "booking_id" : booking_id,
+                        csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val() 
+                    },
+                    success : function(res)
                     {
-                        window.location.reload()
+                        alert(res.message)
+                        if(res.message)
+                        {
+                            window.location.reload()
+                        }
                     }
-                }
-
-            })
+    
+                })
+                
+            }
+            else
+            {
+                console.log("No Cancellation")
+            }
 
         })
 

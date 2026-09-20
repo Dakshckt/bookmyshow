@@ -83,6 +83,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  font-family: "Porsche Next";
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -679,8 +680,8 @@ progress {
   flex-shrink: 0;
   width: 100%;
   max-width: 100%;
-  padding-right: calc(var(--bs-gutter-x) * 0.5);
-  padding-left: calc(var(--bs-gutter-x) * 0.5);
+  /* padding-right: calc(var(--bs-gutter-x) * 0.5);
+  padding-left: calc(var(--bs-gutter-x) * 0.5); */
   margin-top: var(--bs-gutter-y);
 }
 
