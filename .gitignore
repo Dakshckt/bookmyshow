@@ -15,7 +15,7 @@ staticfiles/
 .env.*
 !.env.example
 
-media/
+# media/
 
 .vscode/
 .idea/
