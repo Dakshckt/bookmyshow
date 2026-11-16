@@ -1,92 +1,266 @@
-{% extends "base.html" %}
 
-{% block content %}
+{% extends "base.html" %}
 {% load static %}
 
-<h3 class="h3 p-2">Screen Page</h3><hr>
+{% block content %}
+
+<style>
+    .screen-page {
+        background: #f5f6fa;
+        min-height: 85vh;
+        padding: 25px;
+        border-radius: 12px;
+    }
+
+    .page-heading {
+        color: #292b3a;
+        font-weight: 700;
+    }
+
+    .screen-card {
+        background: #fff;
+        border: 1px solid #e8e8f0;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+    }
+
+    .section-heading {
+        font-size: 18px;
+        font-weight: 700;
+        color: #292b3a;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #55566a;
+        margin-bottom: 7px;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #dedee8;
+        border-radius: 8px;
+        padding: 11px 13px;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #635bdb;
+        box-shadow: 0 0 0 3px rgba(99,91,219,0.12);
+    }
+
+    .btn-purple {
+        background: #635bdb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-weight: 600;
+    }
+
+    .btn-purple:hover {
+        background: #5149c5;
+        color: white;
+    }
+
+    .form-icon {
+        color: #635bdb;
+    }
+</style>
 
 
-<div class="container">
+<div class="screen-page">
+
+    <!-- Page Heading -->
+    <div class="mb-4">
+        <h3 class="page-heading mb-1">Screen Management</h3>
+        <p class="text-muted mb-0">
+            Add screens to theaters by selecting their city and location.
+        </p>
+    </div>
+
+
     <div class="row">
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
 
-                
+        <div class="col-lg-6 col-md-8 col-12">
+
+            <div class="screen-card">
+
+                <h5 class="section-heading">
+                    <i class="bi bi-plus-circle me-2 form-icon"></i>
+                    Add New Screen
+                </h5>
+
+
                 <form id="screenForm" method="POST">
 
                     {% csrf_token %}
-                <!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
-                    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                        <option value="null">Select city</option>
-                        {% for city in cities %}
-                        <option value="{{city.id}}">{{city.name}}</option>
-                        {% endfor %}
-                    </select><br>
-                        
-                    <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                        <option value="null">Select location</option>
-                    </select><br>
-                    
-                    
-                    <select name="theaterSelect" id="theaterSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                    <option value="null">Select theater</option>
-                    </select><br>
 
-                    <input type="text" name="screenName" id="screenName" placeholder="Enter the Name of Screen" class="border border-black px-3 py-2 mt-4 ms-2"><br>
 
-                    <input type="submit" value="submit" name="submit" class="btn btn-primary px-3 mt-4 ms-2 px-5">
+                    <!-- Select City -->
+                    <div class="mb-3">
 
-                    <br><br><Br><p id="result"></p>
+                        <label class="form-label">Select City</label>
+
+                        <select
+                            name="citySelect"
+                            id="citySelect"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="null">Select city</option>
+
+                            {% for city in cities %}
+                                <option value="{{ city.id }}">
+                                    {{ city.name }}
+                                </option>
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Select Location -->
+                    <div class="mb-3">
+
+                        <label class="form-label">Select Location</label>
+
+                        <select
+                            name="locationSelect"
+                            id="locationSelect"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="null">Select location</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Select Theater -->
+                    <div class="mb-3">
+
+                        <label class="form-label">Select Theater</label>
+
+                        <select
+                            name="theaterSelect"
+                            id="theaterSelect"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="null">Select theater</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Screen Name -->
+                    <div class="mb-4">
+
+                        <label class="form-label">Screen Name</label>
+
+                        <input
+                            type="text"
+                            name="screenName"
+                            id="screenName"
+                            class="form-control"
+                            placeholder="Enter screen name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-purple w-100">
+
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Add Screen
+
+                    </button>
+
+
+                    <!-- AJAX Result -->
+                    <div id="result" class="mt-3"></div>
+
 
                 </form>
 
             </div>
-        </div>
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
 
-                Display
-
-            </div>
         </div>
+
     </div>
+
 </div>
 
 
-<!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
+<!-- Common Admin Panel JS -->
 <script src="{% static 'js/adminPanel.js' %}"></script>
+
+
 <script>
 
-    $(document).ready(function(){
+$(document).ready(function(){
 
-        console.log("screen page")
+    console.log("Screen Page");
 
-        $("#screenForm").submit(function(event){
 
-            event.preventDefault()
+    // Add Screen using AJAX
+    $("#screenForm").submit(function(event){
 
-            $.ajax({
-                url : "",
-                type : "POST",
-                data : $(this).serialize(),
-                success : function(res){
+        event.preventDefault();
 
-                    if(res.status)
-                    {
-                        $("#result").html(`<p class="alert alert-success">${res.message}</p>`)   
-                        $("#screenName").val('')
-                    }
-                    else
-                    {
-                        $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
-                    }
+        $.ajax({
+
+            url: "",
+            type: "POST",
+            data: $(this).serialize(),
+
+            success: function(res){
+
+                if(res.status){
+
+                    $("#result").html(
+                        `<div class="alert alert-success">${res.message}</div>`
+                    );
+
+                    $("#screenName").val('');
 
                 }
-            })
+                else{
 
-        })
+                    $("#result").html(
+                        `<div class="alert alert-danger">${res.message}</div>`
+                    );
 
-    })  
+                }
+
+            },
+
+            error: function(){
+
+                $("#result").html(
+                    `<div class="alert alert-danger">
+                        Something went wrong. Please try again.
+                    </div>`
+                );
+
+            }
+
+        });
+
+    });
+
+});
 
 </script>
 

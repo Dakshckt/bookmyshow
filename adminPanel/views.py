@@ -13,26 +13,26 @@ fs = FileSystemStorage(location = "media/movies")
 @login_required
 @admin_required
 def cityFunc(req):
+
     if req.method == "POST":
 
-        name= req.POST.get("cityname")
-        result = city.insert_one({"name" : name})
+        name = req.POST.get("cityname")
+        result = city.insert_one({"name": name})
 
         if result.acknowledged:
             return JsonResponse({
-                "status" : True,
-                "message" : "City Added"
+                "status": True,
+                "message": "City Added"
             })
 
         return JsonResponse({
-            "status" : False,
-            "message" : "Error City Adding"
+            "status": False,
+            "message": "Error City Adding"
         })
 
     cities = list(city.find())
-    return render(req , "admin/city.html" , {"cities" : cities})
 
-
+    return render(req, "admin/city.html", {"cities": cities})
 
 
 @login_required
@@ -62,11 +62,33 @@ def locationFunc(req):
         })
 
     cities = get_all_data(city)
+
+    locations = list(location.find())
+
+    for loc in locations:
+
+        city_obj = city.find_one({
+            "_id": loc.get("city_id")
+        })
+
+        loc["city_name"] = (
+            city_obj.get("name", "Unknown City")
+            if city_obj else "Unknown City"
+        )
+
+    return render(
+        req,
+        "admin/location.html",
+        {
+            "cities": cities,
+            "locations": locations
+        }
+    )
+
+    cities = get_all_data(city)
     
 
     return render(req , "admin/location.html" , {"cities" : cities})
-
-
 
 
 
@@ -98,9 +120,23 @@ def theaterFunc(req):
             "message" : "Error Data Adding"
         })
 
-    cities = get_all_data(city)    
+    cities = get_all_data(city)   
 
-    return render(req , "admin/theater.html" , {"cities" : cities})
+    # Fetch existing theaters
+    theaters = list(theater.find())
+
+    # Get location name for every theater
+    for item in theaters:
+        location_obj = location.find_one({
+            "_id": item.get("location_id")
+        })
+
+        item["location_name"] = (
+            location_obj.get("name", "Unknown Location")
+            if location_obj else "Unknown Location"
+        ) 
+
+    return render(req , "admin/theater.html" , {"cities" : cities , "theaters": theaters})
 
 
 

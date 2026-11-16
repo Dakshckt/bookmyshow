@@ -1,131 +1,528 @@
-{% extends "base.html" %}
 
-{% block content %}
+{% extends "base.html" %}
 {% load static %}
 
-<h3 class="h3 p-2">Seats Page</h3><hr>
+{% block content %}
+
+<style>
+    .seat-page {
+        background: #f5f6fa;
+        min-height: 85vh;
+        padding: 25px;
+        border-radius: 12px;
+    }
+
+    .page-heading {
+        color: #292b3a;
+        font-weight: 700;
+    }
+
+    .seat-card {
+        background: #fff;
+        border: 1px solid #e8e8f0;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+        margin-bottom: 20px;
+    }
+
+    .section-heading {
+        font-size: 18px;
+        font-weight: 700;
+        color: #292b3a;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #55566a;
+        margin-bottom: 7px;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #dedee8;
+        border-radius: 8px;
+        padding: 11px 13px;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #635bdb;
+        box-shadow: 0 0 0 3px rgba(99,91,219,0.12);
+    }
+
+    .btn-purple {
+        background: #635bdb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-weight: 600;
+    }
+
+    .btn-purple:hover {
+        background: #5149c5;
+        color: white;
+    }
+
+    .btn-generate {
+        background: #f0efff;
+        color: #635bdb;
+        border: 1px solid #dedcff;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-weight: 600;
+    }
+
+    .btn-generate:hover {
+        background: #e5e3ff;
+        color: #5149c5;
+    }
+
+    .row-config {
+        background: #fafaff;
+        border: 1px solid #ececf5;
+        border-radius: 9px;
+        padding: 16px;
+        margin-bottom: 15px;
+    }
+
+    .row-heading {
+        color: #635bdb;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .seat-info {
+        background: #f0efff;
+        color: #635bdb;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .form-icon {
+        color: #635bdb;
+    }
+</style>
 
 
-<div class="container">
+<div class="seat-page">
+
+    <!-- Page Heading -->
+    <div class="mb-4">
+
+        <h3 class="page-heading mb-1">Seat Management</h3>
+
+        <p class="text-muted mb-0">
+            Configure rows, seat types and prices for each screen.
+        </p>
+
+    </div>
+
+
     <div class="row">
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
-            
-                <form id="seatForm" method="post">
+
+        <div class="col-lg-7 col-md-9 col-12">
+
+            <!-- Screen Selection Card -->
+            <div class="seat-card">
+
+                <h5 class="section-heading">
+                    <i class="bi bi-ticket-perforated me-2 form-icon"></i>
+                    Select Screen
+                </h5>
+
+
+                <form id="seatForm" method="POST">
+
                     {% csrf_token %}
 
-                <!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
-                    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                        <option value="null">Select city</option>
-                        {% for city in cities %}
-                        <option value="{{city.id}}">{{city.name}}</option>
-                        {% endfor %}
-                    </select><br>
-                        
-                    <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                        <option value="null">Select location</option>
-                    </select><br>
-                                        
-                    <select name="theaterSelect" id="theaterSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                    <option value="null">Select theater</option>
-                    </select><br>
 
-                    <select name="screenSelect" id="screenSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                    <option value="null">Select Screen</option>
-                    </select><br>
+                    <!-- Select City -->
+                    <div class="mb-3">
 
-                    <input type="number" name="row" id="row" placeholder="Enter the number of rows" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-                    <input type="number" name="seats_per_row" id="seats_per_row" placeholder="Enter the number of seats per Row" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-                    <input type="button" value="generate" id="generate" class="btn btn-primary px-3 mt-4 ms-2 px-5"><br><br>
-                    
+                        <label class="form-label">Select City</label>
+
+                        <select
+                            name="citySelect"
+                            id="citySelect"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="null">Select city</option>
+
+                            {% for city in cities %}
+                                <option value="{{ city.id }}">
+                                    {{ city.name }}
+                                </option>
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Select Location -->
+                    <div class="mb-3">
+
+                        <label class="form-label">Select Location</label>
+
+                        <select
+                            name="locationSelect"
+                            id="locationSelect"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="null">Select location</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Select Theater -->
+                    <div class="mb-3">
+
+                        <label class="form-label">Select Theater</label>
+
+                        <select
+                            name="theaterSelect"
+                            id="theaterSelect"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="null">Select theater</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Select Screen -->
+                    <div class="mb-4">
+
+                        <label class="form-label">Select Screen</label>
+
+                        <select
+                            name="screenSelect"
+                            id="screenSelect"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="null">Select screen</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="seat-info mb-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Select the screen for which you want to generate seats.
+                    </div>
+
+
+                    <!-- Seat Configuration -->
+                    <h5 class="section-heading mt-4">
+                        <i class="bi bi-grid me-2 form-icon"></i>
+                        Seat Configuration
+                    </h5>
+
+
+                    <!-- Number of Rows -->
+                    <div class="mb-3">
+
+                        <label class="form-label">Number of Rows</label>
+
+                        <input
+                            type="number"
+                            name="row"
+                            id="row"
+                            class="form-control"
+                            placeholder="Enter number of rows"
+                            min="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Seats Per Row -->
+                    <div class="mb-3">
+
+                        <label class="form-label">Seats Per Row</label>
+
+                        <input
+                            type="number"
+                            name="seats_per_row"
+                            id="seats_per_row"
+                            class="form-control"
+                            placeholder="Enter number of seats per row"
+                            min="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Generate Button -->
+                    <button
+                        type="button"
+                        id="generate"
+                        class="btn btn-generate w-100 mt-2"
+                    >
+
+                        <i class="bi bi-grid-3x3-gap me-1"></i>
+                        Generate Row Configuration
+
+                    </button>
+
+
+                    <!-- Generated Row Configuration -->
+                    <div id="seatFormDiv" class="mt-4"></div>
+
+
+                    <!-- Result Message -->
+                    <div id="result" class="mt-3"></div>
+
+
                 </form>
 
             </div>
-        </div>
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
-                <div id="seatFormDiv">
-    
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
 
-                Display
-
-            </div>
         </div>
+
     </div>
+
 </div>
 
 
 
+<!-- Common Admin Panel JS -->
 <script src="{% static 'js/adminPanel.js' %}"></script>
 
-<script>
-
-    $(document).ready(function(){
-
-        console.log("seat page")
-
-        $("#seatForm").submit(function(event){
-
-            event.preventDefault()
-
-            $.ajax({
-                url : "",
-                type : "POST",
-                data : $(this).serialize(),
-                success : function(res)
-                {
-                    $("#result").html(`<p class="alert alert-success mt-3">${res.message}</p>`)
-                    $("#row").val('')
-                    $("#seats_per_row").val('')
-                    $("#citySelect").val('')
-                    
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 1500);
-                }
-
-            })
-
-        })
-
-    })
-
-</script>
 
 <script>
-    
-    generateBtn = document.querySelector("#generate")
-    seatForm = document.querySelector("#seatForm")
 
-    generateBtn.addEventListener('click' , ()=>{
-        seatFormDiv.innerHTML = ""
-        let row = Number(document.querySelector("#row").value)
-        
-        for(let i = 0 ; i < row ; i++)
-        {
-            let alphabet = String.fromCharCode(65 + i)
-            
-            seatFormDiv.innerHTML += `
-                <br><label class="ps-2">Type of ${alphabet} Row</label><br>
-                <select name="rowType" id="rowType" class="border border-black px-3 py-2 mt-4 ms-2">
-                    <option value="VIP">VIP</option>
-                    <option value="Gold">Gold</option>
-                    <option value="normal" selected>normal</option>
-                </select>
-                <input name="rowPrice" id="rowPrice" class="border border-black px-3 py-2 mt-4 ms-2" placeholder="Enter Price of the Row"><br>
-            `
+$(document).ready(function(){
+
+    console.log("Seat Page");
+
+
+    // =====================================
+    // GENERATE ROW CONFIGURATION
+    // =====================================
+
+    $("#generate").click(function(){
+
+        $("#seatFormDiv").html("");
+        $("#result").html("");
+
+        let rows = Number($("#row").val());
+        let columns = Number($("#seats_per_row").val());
+
+        if(!rows || !columns || rows < 1 || columns < 1 ||
+           !Number.isInteger(rows) || !Number.isInteger(columns)){
+
+            $("#result").html(`
+                <div class="alert alert-warning">
+                    Please enter valid numbers for rows and seats per row.
+                </div>
+            `);
+
+            return;
         }
 
-        seatFormDiv.innerHTML += `
-            <input type="submit" name="submit" value="submit" class="btn btn-primary px-3 mt-4 ms-2 px-5">
-            <p id='result'></p><br><Br>
-        `
-    })
+        if(rows > 26){
+
+            $("#result").html(`
+                <div class="alert alert-warning">
+                    Maximum 26 rows are supported (A to Z).
+                </div>
+            `);
+
+            return;
+        }
+
+
+        let rowHTML = "";
+
+        for(let i = 0; i < rows; i++){
+
+            let alphabet = String.fromCharCode(65 + i);
+
+            rowHTML += `
+
+                <div class="row-config">
+
+                    <h6 class="row-heading">
+                        <i class="bi bi-grid-3x3-gap me-2"></i>
+                        Row ${alphabet}
+                    </h6>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Type of ${alphabet} Row
+                        </label>
+
+                        <select
+                            name="rowType"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="VIP">VIP</option>
+                            <option value="Gold">Gold</option>
+                            <option value="normal" selected>Normal</option>
+
+                        </select>
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label">
+                            Price of ${alphabet} Row
+                        </label>
+
+                        <input
+                            type="number"
+                            name="rowPrice"
+                            class="form-control"
+                            placeholder="Enter price for row ${alphabet}"
+                            min="0"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        rowHTML += `
+
+            <div class="seat-info mb-3">
+
+                <i class="bi bi-check-circle me-2"></i>
+
+                Configuration generated for ${rows} rows
+                and ${columns} seats per row.
+
+                <br>
+
+                Total Seats: ${rows * columns}
+
+            </div>
+
+            <button
+                type="submit"
+                id="submitSeats"
+                class="btn btn-purple w-100"
+            >
+
+                <i class="bi bi-plus-lg me-1"></i>
+                Add Seats
+
+            </button>
+
+        `;
+
+
+        $("#seatFormDiv").html(rowHTML);
+
+    });
+
+
+
+    // =====================================
+    // ADD SEATS USING AJAX
+    // =====================================
+
+    $("#seatForm").submit(function(event){
+
+        event.preventDefault();
+
+        if($("#seatFormDiv").find("#submitSeats").length === 0){
+
+            $("#result").html(`
+                <div class="alert alert-warning">
+                    Please generate the row configuration first.
+                </div>
+            `);
+
+            return;
+        }
+
+
+        $.ajax({
+
+            url: "",
+            type: "POST",
+            data: $(this).serialize(),
+
+            success: function(res){
+
+                if(res.status){
+
+                    $("#result").html(`
+                        <div class="alert alert-success mt-3">
+                            ${res.message}
+                        </div>
+                    `);
+
+                    $("#row").val('');
+                    $("#seats_per_row").val('');
+
+                    $("#citySelect").val('null').trigger("change");
+
+                    $("#seatFormDiv").html('');
+
+
+                    setTimeout(function(){
+
+                        window.location.reload();
+
+                    }, 1500);
+
+                }
+                else{
+
+                    $("#result").html(`
+                        <div class="alert alert-danger mt-3">
+                            ${res.message}
+                        </div>
+                    `);
+
+                }
+
+            },
+
+            error: function(){
+
+                $("#result").html(`
+                    <div class="alert alert-danger mt-3">
+                        Something went wrong. Please try again.
+                    </div>
+                `);
+
+            }
+
+        });
+
+    });
+
+});
 
 </script>
 

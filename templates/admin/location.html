@@ -2,44 +2,393 @@
 
 {% block content %}
 
-<h3 class="h3 p-2">Location Page</h3><hr class="mb-5">
+<style>
+    .location-container {
+        padding: 25px;
+        background: #f5f6fa;
+        min-height: 100vh;
+    }
 
-<div class="container">
+    .page-title {
+        font-size: 27px;
+        font-weight: 700;
+        color: #222;
+    }
 
-    <div class="row">
+    .page-subtitle {
+        color: #777;
+        font-size: 14px;
+    }
 
-        <div class="col-md-6 col-12 parentBoxDesign">
+    .location-card {
+        background: #fff;
+        border: 1px solid #e9e9ef;
+        border-radius: 12px;
+        padding: 24px;
+        height: 100%;
+    }
 
-            <div class="boxDesign">
+    .card-heading {
+        font-size: 18px;
+        font-weight: 650;
+        color: #292929;
+    }
+
+    .card-description {
+        font-size: 13px;
+        color: #888;
+    }
+
+    .location-input,
+    .location-select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        outline: none;
+        font-size: 14px;
+        background: white;
+        transition: 0.2s;
+    }
+
+    .location-input:focus,
+    .location-select:focus {
+        border-color: #635bdb;
+        box-shadow: 0 0 0 3px rgba(99,91,219,0.1);
+    }
+
+    .add-location-btn {
+        background: #635bdb;
+        color: white;
+        border: none;
+        padding: 11px 22px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .add-location-btn:hover {
+        background: #5047c4;
+        color: white;
+    }
+
+    .location-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 15px;
+        border: 1px solid #eee;
+        border-radius: 9px;
+        margin-bottom: 10px;
+        background: #fff;
+        transition: 0.2s;
+    }
+
+    .location-item:hover {
+        background: #f9f9ff;
+        border-color: #dcd9ff;
+    }
+
+    .location-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .location-city {
+        font-size: 12px;
+        color: #888;
+        margin-top: 4px;
+    }
+
+    .location-number {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eeedff;
+        color: #635bdb;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .location-count {
+        background: #eeedff;
+        color: #635bdb;
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .city-tag {
+        background: #f0efff;
+        color: #635bdb;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 15px;
+        color: #999;
+    }
+
+    .empty-state i {
+        font-size: 38px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    #result {
+        margin-top: 15px;
+    }
+
+    @media(max-width: 768px) {
+        .location-container {
+            padding: 15px;
+        }
+
+        .page-title {
+            font-size: 22px;
+        }
+    }
+</style>
+
+
+<div class="location-container">
+
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="page-title">Location Management</h2>
+            <p class="page-subtitle mb-0">
+                Add and manage locations associated with different cities.
+            </p>
+        </div>
+
+        <div class="mt-3 mt-md-0">
+            <span class="location-count">
+                <i class="bi bi-geo-alt me-1"></i>
+                <span id="locationCount">{{ locations|length }}</span> Locations
+            </span>
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- Add Location Section -->
+        <div class="col-12 col-lg-5">
+
+            <div class="location-card">
+
+                <div class="mb-4">
+
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-plus-circle-fill text-primary fs-5"></i>
+                        <h5 class="card-heading mb-0">Add New Location</h5>
+                    </div>
+
+                    <p class="card-description mb-0">
+                        Enter the location name and select its associated city.
+                    </p>
+
+                </div>
+
 
                 <form id="locationForm" method="post">
-    
+
                     {% csrf_token %}
-                    <input type="text" name="locationName" id="locationName" placeholder="Enter Location Name"  class="border border-black px-3 py-2 mt-4 ms-2">
-                    <br>
-                    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                        <option value="null">Select</option>
-                        {% for city in cities %}
-                            <option value="{{city.id}}">{{city.name}}</option>
-                        {% endfor %}
-                    </select><br>
-                    <input type="submit" name="submit" value="Add Location" class="btn btn-primary px-3 mt-4 ms-2 px-5">
-    
-                    <br><Br><br><p id="result"></p>
-    
-    
+
+                    <div class="mb-3">
+
+                        <label for="locationName" class="form-label fw-semibold small">
+                            Location Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="locationName"
+                            id="locationName"
+                            class="location-input"
+                            placeholder="e.g. Andheri, Bandra, Dadar"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label for="citySelect" class="form-label fw-semibold small">
+                            Select City
+                        </label>
+
+                        <select
+                            name="citySelect"
+                            id="citySelect"
+                            class="location-select"
+                            required
+                        >
+
+                            <option value="" selected disabled>
+                                Choose a city
+                            </option>
+
+                            {% for city in cities %}
+
+                                <option value="{{ city.id }}">
+                                    {{ city.name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <button type="submit" class="add-location-btn mt-2 w-100">
+
+                        <i class="bi bi-plus-lg me-2"></i>
+                        Add Location
+
+                    </button>
+
+
+                    <div id="result"></div>
+
                 </form>
 
-            </div>
 
+                <hr class="my-4">
+
+                <div class="d-flex align-items-start gap-2">
+
+                    <i class="bi bi-info-circle text-primary mt-1"></i>
+
+                    <small class="text-muted">
+                        Every location must be associated with a city.
+                        Locations can later be used while registering theaters.
+                    </small>
+
+                </div>
+
+            </div>
 
         </div>
 
 
-        <div class="parentBoxDesign col-md-6 col-12">
+        <!-- Existing Locations Section -->
+        <div class="col-12 col-lg-7">
 
-            <div class="boxDesign">
-                Display
+            <div class="location-card">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+
+                    <div>
+                        <h5 class="card-heading mb-1">Existing Locations</h5>
+
+                        <p class="card-description mb-0">
+                            View all registered locations and their cities.
+                        </p>
+                    </div>
+
+                    <span class="location-count">
+                        Total: <span id="listLocationCount">{{ locations|length }}</span>
+                    </span>
+
+                </div>
+
+
+                <!-- Search Location -->
+                <div class="mb-3 position-relative">
+
+                    <i class="bi bi-search position-absolute text-muted"
+                       style="left:13px;top:13px;"></i>
+
+                    <input
+                        type="text"
+                        id="searchLocation"
+                        class="location-input ps-5"
+                        placeholder="Search location or city..."
+                    >
+
+                </div>
+
+
+                <!-- Location List -->
+                <div id="locationList">
+
+                    {% for loc in locations %}
+
+                    <div class="location-item">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="location-number">
+                                {{ forloop.counter }}
+                            </div>
+
+                            <div>
+
+                                <p class="location-name">
+                                    {{ loc.name }}
+                                </p>
+
+                                <p class="location-city mb-0">
+                                    <i class="bi bi-geo-alt me-1"></i>
+                                    {{ loc.city_name }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <span class="city-tag">
+                            <i class="bi bi-building me-1"></i>
+                            {{ loc.city_name }}
+                        </span>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="empty-state" id="emptyLocation">
+
+                        <i class="bi bi-geo"></i>
+
+                        <h6>No Locations Added Yet</h6>
+
+                        <small>Add your first location using the form.</small>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <div id="noSearchResult" class="empty-state d-none">
+
+                    <i class="bi bi-search"></i>
+
+                    <h6>No Matching Location Found</h6>
+
+                    <small>Try searching with another location or city name.</small>
+
+                </div>
+
             </div>
 
         </div>
@@ -49,42 +398,201 @@
 </div>
 
 
+<!-- AJAX and Search -->
+<script>
+
+    $(document).ready(function() {
+
+        console.log("Location Page Loaded");
 
 
-    <script>
+        // AJAX: Add Location
+        $("#locationForm").submit(function(event) {
 
-        $(document).ready(function(){
+            event.preventDefault();
 
-            console.log("Location Page")
+            let locationName = $("#locationName").val().trim();
 
-            $("#locationForm").submit(function(event){
+            let cityId = $("#citySelect").val();
 
-                event.preventDefault()
+            let cityName = $("#citySelect option:selected").text().trim();
 
-                $.ajax({
-                    url : "",
-                    type : "POST",
-                    data : $(this).serialize(),
-                    success : function(res){
 
-                        if(res.status)
-                        {
-                            $("#result").html(`<p class="alert alert-success">${res.message}</p>`) 
-                            $("#locationName").val('')  
-                        }
-                        else
-                        {
-                            $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
-                        }
+            if (locationName === "" || !cityId) {
+                return;
+            }
+
+
+            let submitBtn = $(this).find("button[type='submit']");
+
+
+            submitBtn.prop("disabled", true)
+                     .html('<span class="spinner-border spinner-border-sm me-2"></span>Adding...');
+
+
+            $.ajax({
+
+                url: "",
+                type: "POST",
+                data: $(this).serialize(),
+
+                success: function(res) {
+
+                    if (res.status) {
+
+                        $("#result").html(
+                            `<div class="alert alert-success py-2 small mb-0">
+                                <i class="bi bi-check-circle me-2"></i>
+                                ${res.message}
+                            </div>`
+                        );
+
+
+                        // Update Location Count
+                        let locationCount = parseInt($("#locationCount").text()) + 1;
+
+                        $("#locationCount").text(locationCount);
+                        $("#listLocationCount").text(locationCount);
+
+
+                        // Remove Empty State
+                        $("#emptyLocation").remove();
+
+
+                        // Add New Location to List
+                        let newLocation = `
+                            <div class="location-item">
+
+                                <div class="d-flex align-items-center gap-3">
+
+                                    <div class="location-number">
+                                        ${locationCount}
+                                    </div>
+
+                                    <div>
+
+                                        <p class="location-name">
+                                            ${$("<div>").text(locationName).html()}
+                                        </p>
+
+                                        <p class="location-city mb-0">
+                                            <i class="bi bi-geo-alt me-1"></i>
+                                            ${$("<div>").text(cityName).html()}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                                <span class="city-tag">
+                                    <i class="bi bi-building me-1"></i>
+                                    ${$("<div>").text(cityName).html()}
+                                </span>
+
+                            </div>
+                        `;
+
+
+                        $("#locationList").prepend(newLocation);
+
+
+                        // Reset Form
+                        $("#locationName").val("");
+                        $("#citySelect").val("");
+
+
+                        // Reset Search
+                        $("#searchLocation").val("");
+                        $(".location-item").show();
+                        $("#noSearchResult").addClass("d-none");
 
                     }
-                })
 
-            })
+                    else {
 
-        })
+                        $("#result").html(
+                            `<div class="alert alert-danger py-2 small mb-0">
+                                <i class="bi bi-exclamation-circle me-2"></i>
+                                ${res.message}
+                            </div>`
+                        );
 
-    </script>
+                    }
 
+                },
+
+                error: function() {
+
+                    $("#result").html(
+                        `<div class="alert alert-danger py-2 small mb-0">
+                            Something went wrong. Please try again.
+                        </div>`
+                    );
+
+                },
+
+                complete: function() {
+
+                    submitBtn.prop("disabled", false)
+                             .html('<i class="bi bi-plus-lg me-2"></i>Add Location');
+
+                }
+
+            });
+
+        });
+
+
+        // Search Locations by Name or City
+        $("#searchLocation").on("keyup", function() {
+
+            let searchValue = $(this).val().toLowerCase().trim();
+
+            let visibleCount = 0;
+
+
+            $(".location-item").each(function() {
+
+                let locationName = $(this).find(".location-name").text().toLowerCase();
+
+                let cityName = $(this).find(".location-city").text().toLowerCase();
+
+
+                if (
+                    locationName.includes(searchValue) ||
+                    cityName.includes(searchValue)
+                ) {
+
+                    $(this).show();
+                    visibleCount++;
+
+                }
+
+                else {
+
+                    $(this).hide();
+
+                }
+
+            });
+
+
+            if (visibleCount === 0 && $(".location-item").length > 0) {
+
+                $("#noSearchResult").removeClass("d-none");
+
+            }
+
+            else {
+
+                $("#noSearchResult").addClass("d-none");
+
+            }
+
+        });
+
+    });
+
+</script>
 
 {% endblock %}

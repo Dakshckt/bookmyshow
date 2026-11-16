@@ -2,41 +2,311 @@
 
 {% block content %}
 
+<style>
+    .city-container {
+        padding: 25px;
+        background: #f5f6fa;
+        min-height: 100vh;
+    }
+
+    .page-title {
+        font-size: 27px;
+        font-weight: 700;
+        color: #222;
+    }
+
+    .page-subtitle {
+        color: #777;
+        font-size: 14px;
+    }
+
+    .city-card {
+        background: #fff;
+        border: 1px solid #e9e9ef;
+        border-radius: 12px;
+        padding: 24px;
+        height: 100%;
+    }
+
+    .card-heading {
+        font-size: 18px;
+        font-weight: 650;
+        color: #292929;
+    }
+
+    .card-description {
+        font-size: 13px;
+        color: #888;
+    }
+
+    .city-input {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        outline: none;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+    .city-input:focus {
+        border-color: #635bdb;
+        box-shadow: 0 0 0 3px rgba(99,91,219,0.1);
+    }
+
+    .add-city-btn {
+        background: #635bdb;
+        color: white;
+        border: none;
+        padding: 11px 22px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .add-city-btn:hover {
+        background: #5047c4;
+        color: white;
+    }
+
+    .city-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 15px;
+        border: 1px solid #eee;
+        border-radius: 9px;
+        margin-bottom: 10px;
+        background: #fff;
+        transition: 0.2s;
+    }
+
+    .city-item:hover {
+        background: #f9f9ff;
+        border-color: #dcd9ff;
+    }
+
+    .city-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .city-number {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eeedff;
+        color: #635bdb;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .city-count {
+        background: #eeedff;
+        color: #635bdb;
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 15px;
+        color: #999;
+    }
+
+    .empty-state i {
+        font-size: 38px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    #result {
+        margin-top: 15px;
+    }
+
+    @media(max-width: 768px) {
+        .city-container {
+            padding: 15px;
+        }
+
+        .page-title {
+            font-size: 22px;
+        }
+    }
+</style>
 
 
-<h3 class="h3 p-2">City Page</h3><hr class="mb-5">
+<div class="city-container">
 
-<div class="container">
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
 
-    <div class="row" style="padding: 0px;">
+        <div>
+            <h2 class="page-title">City Management</h2>
+            <p class="page-subtitle mb-0">
+                Add and manage the cities available in your movie booking system.
+            </p>
+        </div>
 
-        <div class="col-md-6 col-12 parentBoxDesign">
+        <div class="mt-3 mt-md-0">
+            <span class="city-count">
+                <i class="bi bi-geo-alt me-1"></i>
+                <span id="cityCount">{{ cities|length }}</span> Cities
+            </span>
+        </div>
 
-            <div class=" boxDesign">
-    
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- Add City Section -->
+        <div class="col-12 col-lg-5">
+
+            <div class="city-card">
+
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-plus-circle-fill text-primary fs-5"></i>
+                        <h5 class="card-heading mb-0">Add New City</h5>
+                    </div>
+
+                    <p class="card-description mb-0">
+                        Enter the city name to add it to your system.
+                    </p>
+                </div>
+
+
                 <form id="cityForm" method="post">
-    
+
                     {% csrf_token %}
-                    <input type="text" name="cityname" id="cityname" placeholder="Enter Name of the city" class="border border-black px-3 py-2">
-                    <Br><input type="submit" name="submit" value="Add City" class="btn btn-primary px-3 mt-3 px-5">
-    
-                    <br><Br><Br>
-                    <p id="result"></p>
-    
+
+                    <label for="cityname" class="form-label fw-semibold small">
+                        City Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="cityname"
+                        id="cityname"
+                        class="city-input"
+                        placeholder="e.g. Mumbai, Pune, Delhi"
+                        required
+                    >
+
+                    <button type="submit" class="add-city-btn mt-3 w-100">
+                        <i class="bi bi-plus-lg me-2"></i>
+                        Add City
+                    </button>
+
+                    <div id="result"></div>
+
                 </form>
+
+
+                <hr class="my-4">
+
+                <div class="d-flex align-items-start gap-2">
+                    <i class="bi bi-info-circle text-primary mt-1"></i>
+
+                    <small class="text-muted">
+                        Adding a city makes it available for associating locations
+                        and theaters within the booking system.
+                    </small>
+                </div>
 
             </div>
 
         </div>
-        <div class="col-md-6 col-12 parentBoxDesign">
 
-            <div class="boxDesign">
 
-                <ul class="">
+        <!-- Existing Cities Section -->
+        <div class="col-12 col-lg-7">
+
+            <div class="city-card">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+
+                    <div>
+                        <h5 class="card-heading mb-1">Existing Cities</h5>
+                        <p class="card-description mb-0">
+                            All cities currently registered in the database.
+                        </p>
+                    </div>
+
+                    <span class="city-count">
+                        Total: <span id="listCityCount">{{ cities|length }}</span>
+                    </span>
+
+                </div>
+
+
+                <!-- Search City -->
+                <div class="mb-3 position-relative">
+
+                    <i class="bi bi-search position-absolute text-muted"
+                       style="left:13px;top:13px;"></i>
+
+                    <input
+                        type="text"
+                        id="searchCity"
+                        class="city-input ps-5"
+                        placeholder="Search city..."
+                    >
+
+                </div>
+
+
+                <!-- City List -->
+                <div id="cityList">
+
                     {% for city in cities %}
-                        <li class="alert alert-warning">{{city.name}}</li>
+
+                    <div class="city-item">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="city-number">
+                                {{ forloop.counter }}
+                            </div>
+
+                            <p class="city-name">
+                                {{ city.name }}
+                            </p>
+
+                        </div>
+
+                        <span class="badge bg-light text-secondary">
+                            City
+                        </span>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="empty-state" id="emptyCity">
+                        <i class="bi bi-geo-alt"></i>
+                        <h6>No Cities Added Yet</h6>
+                        <small>Add your first city using the form.</small>
+                    </div>
+
                     {% endfor %}
-                </ul>
+
+                </div>
+
+                <div id="noSearchResult" class="empty-state d-none">
+                    <i class="bi bi-search"></i>
+                    <h6>No Matching City Found</h6>
+                    <small>Try searching with another city name.</small>
+                </div>
 
             </div>
 
@@ -46,38 +316,148 @@
 
 </div>
 
+
+<!-- AJAX and Search -->
 <script>
 
-    $(document).ready(function(){
+    $(document).ready(function() {
 
-        console.log("City Page")
+        console.log("City Page Loaded");
 
-        $("#cityForm").submit(function(event){
+        // AJAX: Add City
+        $("#cityForm").submit(function(event) {
 
-            event.preventDefault()
+            event.preventDefault();
+
+            let cityName = $("#cityname").val().trim();
+
+            if (cityName === "") {
+                return;
+            }
+
+            let submitBtn = $(this).find("button[type='submit']");
+
+            submitBtn.prop("disabled", true)
+                     .html('<span class="spinner-border spinner-border-sm me-2"></span>Adding...');
 
             $.ajax({
-                url : "",
-                type : "POST",
-                data : $(this).serialize(),
-                success : function(res){
 
-                    if(res.status == true)
-                    {
-                        $("#result").html(`<p class="alert alert-success">${res.message}</p>`)  
-                        $("#cityname").val("") 
+                url: "",
+                type: "POST",
+                data: $(this).serialize(),
+
+                success: function(res) {
+
+                    if (res.status == true) {
+
+                        $("#result").html(
+                            `<div class="alert alert-success py-2 small mb-0">
+                                <i class="bi bi-check-circle me-2"></i>
+                                ${res.message}
+                            </div>`
+                        );
+
+                        // Add newly inserted city to frontend list
+                        let cityCount = parseInt($("#cityCount").text()) + 1;
+
+                        $("#cityCount").text(cityCount);
+                        $("#listCityCount").text(cityCount);
+
+                        // Remove empty state if present
+                        $("#emptyCity").remove();
+
+                        // Create new city item
+                        let newCity = `
+                            <div class="city-item">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="city-number">${cityCount}</div>
+                                    <p class="city-name mb-0">${$("<div>").text(cityName).html()}</p>
+                                </div>
+                                <span class="badge bg-light text-secondary">City</span>
+                            </div>
+                        `;
+
+                        $("#cityList").prepend(newCity);
+
+                        $("#cityname").val("");
+
+                        $("#noSearchResult").addClass("d-none");
+
                     }
-                    else
-                    {
-                        $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
+                    else {
+
+                        $("#result").html(
+                            `<div class="alert alert-danger py-2 small mb-0">
+                                <i class="bi bi-exclamation-circle me-2"></i>
+                                ${res.message}
+                            </div>`
+                        );
+
                     }
+
+                },
+
+                error: function() {
+
+                    $("#result").html(
+                        `<div class="alert alert-danger py-2 small mb-0">
+                            Something went wrong. Please try again.
+                        </div>`
+                    );
+
+                },
+
+                complete: function() {
+
+                    submitBtn.prop("disabled", false)
+                             .html('<i class="bi bi-plus-lg me-2"></i>Add City');
 
                 }
-            })
 
-        })
+            });
 
-    })
+        });
+
+
+        // Search Existing Cities
+        $("#searchCity").on("keyup", function() {
+
+            let searchValue = $(this).val().toLowerCase().trim();
+
+            let visibleCount = 0;
+
+            $(".city-item").each(function() {
+
+                let cityName = $(this).find(".city-name").text().toLowerCase();
+
+                if (cityName.includes(searchValue)) {
+
+                    $(this).show();
+                    visibleCount++;
+
+                }
+                else {
+
+                    $(this).hide();
+
+                }
+
+            });
+
+            if (visibleCount === 0 && $(".city-item").length > 0) {
+
+                $("#noSearchResult").removeClass("d-none");
+
+            }
+            else {
+
+                $("#noSearchResult").addClass("d-none");
+
+            }
+
+        });
+
+    });
 
 </script>
 

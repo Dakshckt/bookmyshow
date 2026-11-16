@@ -1,8 +1,8 @@
 import razorpay
 
 # Razorpay API Keys
-RAZORPAY_KEY_ID = "rzp_test_TaDJtEHooM9W9G"
-RAZORPAY_KEY_SECRET = "VGvaV62OJdjpVsFhlI7aQcIK" 
+RAZORPAY_KEY_ID = "rzp_test_TqymjTaKymb2eg"
+RAZORPAY_KEY_SECRET = "2X8oRnboNeY5tLelz374FPMR" 
 
 
 # Razorpay client initialization

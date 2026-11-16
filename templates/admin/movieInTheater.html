@@ -1,95 +1,287 @@
+
 {% extends 'base.html' %}
 
 {% block content %}
 {% load static %}
 
-<h3 class="h3 p-2">Alot Movie in Theater</h3><hr>
+<style>
+    body {
+        background-color: #f5f6fa;
+    }
 
+    .page-heading {
+        font-weight: 600;
+        color: #252538;
+    }
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
+    .content-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 25px;
+        border: 1px solid #eeeeF5;
+        max-width: 950px;
+        margin: 25px auto;
+    }
 
-                                
-                <form id="movieInTheaterForm" method="POST" style="display: flex;">
-                    
-                    {% csrf_token %}
+    .card-title {
+        color: #252538;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
 
-                    <div id="firstDiv">
+    .card-subtitle {
+        color: #888899;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
 
-                        <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 ms-2">
-                            <option value="null">Select city</option>
+    .form-label {
+        font-weight: 500;
+        color: #444455;
+        margin-bottom: 8px;
+    }
+
+    .form-control,
+    .form-select {
+        padding: 11px 13px;
+        border-radius: 7px;
+        border: 1px solid #ddddE8;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #635bdb;
+        box-shadow: 0 0 0 0.15rem rgba(99, 91, 219, 0.12);
+    }
+
+    .add-btn {
+        background-color: #635bdb;
+        color: white;
+        padding: 10px 28px;
+        border-radius: 7px;
+        border: none;
+        font-weight: 500;
+    }
+
+    .add-btn:hover {
+        background-color: #5149c5;
+        color: white;
+    }
+
+    .secondary-btn {
+        background-color: #eeecff;
+        color: #635bdb;
+        padding: 10px 28px;
+        border-radius: 7px;
+        border: none;
+        font-weight: 500;
+    }
+
+    .secondary-btn:hover {
+        background-color: #e1dfff;
+        color: #5149c5;
+    }
+
+    .section-divider {
+        border-top: 1px solid #eeeeF5;
+        margin: 25px 0;
+    }
+
+    .time-entry {
+        background: #f8f8fc;
+        border: 1px solid #eeeeF5;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 12px;
+    }
+
+    .step-label {
+        display: inline-block;
+        background: #eeecff;
+        color: #635bdb;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+</style>
+
+<div class="container-fluid px-3 px-md-4">
+
+    <div class="pt-3">
+        <h3 class="page-heading">
+            <i class="bi bi-calendar2-plus me-2" style="color:#635bdb;"></i>
+            Movie in Theater Management
+        </h3>
+
+        <p class="text-muted mb-2">
+            Assign movies to theaters and configure their show timings.
+        </p>
+
+        <hr>
+    </div>
+
+    <div class="content-card">
+
+        <h5 class="card-title">
+            <i class="bi bi-plus-circle me-2" style="color:#635bdb;"></i>
+            Add Movie in Theater
+        </h5>
+
+        <p class="card-subtitle">
+            Enter the movie, theater and show details below.
+        </p>
+
+        <form id="movieInTheaterForm" method="POST">
+
+            {% csrf_token %}
+
+            <!-- FIRST STEP -->
+            <div id="firstDiv">
+
+                <span class="step-label">STEP 1 - Movie and Theater Details</span>
+
+                <div class="row g-3">
+
+                    <!-- City -->
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Select City</label>
+
+                        <select name="citySelect" id="citySelect" class="form-select">
+                            <option value="null">Select City</option>
+
                             {% for city in cities %}
-                            <option value="{{city.id}}">{{city.name}}</option>
+                                <option value="{{ city.id }}">{{ city.name }}</option>
                             {% endfor %}
-                        </select><br>
-                            
-                        <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                            <option value="null">Select location</option>
-                        </select><br>
-                        
-                                
-                        <select name="theaterSelect" id="theaterSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                            <option value="null">Select theater</option>
-                        </select><br>
-                        
-                                    
-                        <select name="screenSelect" id="screenSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                            <option value="null">Select theater</option>
-                        </select><br>
-                                        
-                                    
-                        <select name="movieSelect" id="movieSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                            <option value="null">Select Movie</option>
-                            {% for movie in movies %}
-                            <option value="{{movie.id}}">{{movie.name}}</option>
-                            {% endfor %}
-                        </select><br>
-
-                        <input type="date" name="releaseDate" id="releaseDate" placeholder="Enter the Release Date" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-
-                        <input type="date" name="toDate" id="toDate" placeholder="Enter the Closing Date" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-
-                        <input type="button" id="nextButton" value="Next" class="btn btn-primary px-3 mt-4 ms-2 px-5">
-
-
+                        </select>
                     </div>
 
-                </form>
+                    <!-- Location -->
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Select Location</label>
 
-            </div>
-        </div>
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
+                        <select name="locationSelect" id="locationSelect" class="form-select">
+                            <option value="null">Select Location</option>
+                        </select>
+                    </div>
 
-                <div id="secondDiv" style="display: none;">
-                    <input type="number" placeholder="Enter the number of shows" name="noOfShow" id="noOfShow" class="border border-black px-3 py-2 mt-2 ms-2"><br><Br>
-                    <input type="button" id="enterButton" value="Enter" class="border border-black px-3 py-2 mt-2 ms-2"><br><Br>
+                    <!-- Theater -->
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Select Theater</label>
+
+                        <select name="theaterSelect" id="theaterSelect" class="form-select">
+                            <option value="null">Select Theater</option>
+                        </select>
+                    </div>
+
+                    <!-- Screen -->
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Select Screen</label>
+
+                        <select name="screenSelect" id="screenSelect" class="form-select">
+                            <option value="null">Select Screen</option>
+                        </select>
+                    </div>
+
+                    <!-- Movie -->
+                    <div class="col-12">
+                        <label class="form-label">Select Movie</label>
+
+                        <select name="movieSelect" id="movieSelect" class="form-select">
+                            <option value="null">Select Movie</option>
+
+                            {% for movie in movies %}
+                                <option value="{{ movie.id }}">{{ movie.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Release Date -->
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Release Date</label>
+
+                        <input
+                            type="date"
+                            name="releaseDate"
+                            id="releaseDate"
+                            class="form-control"
+                        >
+                    </div>
+
+                    <!-- Closing Date -->
+                    <div class="col-md-6 col-12">
+                        <label class="form-label">Closing Date</label>
+
+                        <input
+                            type="date"
+                            name="toDate"
+                            id="toDate"
+                            class="form-control"
+                        >
+                    </div>
+
+                </div>
+
+                <div class="mt-4">
+                    <button type="button" id="nextButton" class="btn add-btn">
+                        Next
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
                 </div>
 
             </div>
-        </div>
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
 
-                Display
+            <!-- SECOND STEP -->
+            <div id="secondDiv" style="display:none;">
+
+                <hr class="section-divider">
+
+                <span class="step-label">STEP 2 - Show Timings</span>
+
+                <h6 class="fw-semibold mb-3">
+                    Configure Movie Show Timings
+                </h6>
+
+                <div class="mb-3">
+                    <label class="form-label">Number of Shows</label>
+
+                    <input
+                        type="number"
+                        placeholder="Enter the number of shows"
+                        name="noOfShow"
+                        id="noOfShow"
+                        class="form-control"
+                        min="1"
+                    >
+                </div>
+
+                <button type="button" id="enterButton" class="btn secondary-btn">
+                    <i class="bi bi-clock me-2"></i>
+                    Enter
+                </button>
+
+                <div id="showTimeContainer" class="mt-4"></div>
+
+                <div id="result" class="mt-3"></div>
 
             </div>
-        </div>
-    </div>
-</div>
 
+        </form>
+
+    </div>
+
+</div>
 
 <script src="{% static 'js/adminPanel.js' %}"></script>
 
 <script>
 
+    document.querySelector("#nextButton").addEventListener('click', function () {
 
-    document.querySelector("#nextButton").addEventListener('click' , function(){
-
-        // GENERATED CODE FROM CHATGPT NOT WRITTEN BY YOUR SELF
-        let fields = document.querySelectorAll("select, input[type='date']");
+        let fields = document.querySelectorAll(
+            "#firstDiv select, #firstDiv input[type='date']"
+        );
 
         for (let field of fields) {
 
@@ -100,68 +292,141 @@
             }
 
         }
-        
-        document.querySelector("#secondDiv").style.display = 'block'
 
-    })
+        let releaseDate = document.querySelector("#releaseDate").value;
+        let toDate = document.querySelector("#toDate").value;
 
-
-    document.querySelector("#enterButton").addEventListener('click' , function(){
-
-        // document.querySelector("#secondDiv").innerHTML = ""
-
-        console.log("enter buttom clicked")
-        document.querySelector("#enterButton").disabled = true
-        let no_of_entry = parseInt(document.querySelector("#noOfShow").value)
-
-        for(let i = 0 ; i < no_of_entry ; i++)
-        {
-               document.querySelector("#secondDiv").innerHTML += `
-                    <input type='time' class='border border-secondary ms-2' name='showTime' id='showTime'><Br><Br>
-               `
+        if (toDate < releaseDate) {
+            alert("Closing date cannot be before the release date.");
+            document.querySelector("#toDate").focus();
+            return;
         }
 
-        document.querySelector("#secondDiv").innerHTML += `
-            <input type="submit" value="Add" id="addbtn" class="btn btn-primary px-5 ms-2"><br><br>
-            <p id="result"></p>
-        `
+        document.querySelector("#secondDiv").style.display = 'block';
 
-    })
+        document.querySelector("#secondDiv").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    });
 
 
-    $(document).ready(function(){
+    document.querySelector("#enterButton").addEventListener('click', function () {
 
-        console.log("Movie In Theater Page")
-        
-        $("#movieInTheaterForm").submit(function(event){
+        let no_of_entry = parseInt(
+            document.querySelector("#noOfShow").value
+        );
 
-            event.preventDefault()
+        if (isNaN(no_of_entry) || no_of_entry < 1) {
+            alert("Please enter a valid number of shows.");
+            document.querySelector("#noOfShow").focus();
+            return;
+        }
+
+        let container = document.querySelector("#showTimeContainer");
+
+        container.innerHTML = "";
+
+        for (let i = 0; i < no_of_entry; i++) {
+
+            container.innerHTML += `
+                <div class="time-entry">
+
+                    <label class="form-label">
+                        Show ${i + 1} Start Time
+                    </label>
+
+                    <input
+                        type="time"
+                        class="form-control"
+                        name="showTime"
+                        id="showTime${i}"
+                        required
+                    >
+
+                </div>
+            `;
+
+        }
+
+        container.innerHTML += `
+            <button type="submit" id="addbtn" class="btn add-btn mt-2">
+                <i class="bi bi-plus-lg me-2"></i>
+                Add Movie to Theater
+            </button>
+        `;
+
+        document.querySelector("#enterButton").disabled = true;
+
+    });
+
+
+    $(document).ready(function () {
+
+        console.log("Movie In Theater Page");
+
+        $("#movieInTheaterForm").submit(function (event) {
+
+            event.preventDefault();
+
+            let timeFields = document.querySelectorAll(
+                "#showTimeContainer input[name='showTime']"
+            );
+
+            for (let field of timeFields) {
+
+                if (field.value == "") {
+                    alert("Please enter all show timings.");
+                    field.focus();
+                    return;
+                }
+
+            }
 
             $.ajax({
-                url : "",
-                type : "POST",
-                data : $(this).serialize(),
-                success : function(res)
-                {
-                    if(res.status)
-                    {
-                        $("#result").html(`<p class="alert alert-success">${res.message}</p>`) 
-                        setTimeout(()=>{
-                            window.location.reload()  
-                        } , 1000)
+
+                url: "",
+                type: "POST",
+                data: $(this).serialize(),
+
+                success: function (res) {
+
+                    if (res.status) {
+
+                        $("#result").html(
+                            `<p class="alert alert-success">${res.message}</p>`
+                        );
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+
                     }
-                    else
-                    {
-                        $("#result").html(`<p class="alert alert-danger">${res.message}</p>`)   
+                    else {
+
+                        $("#result").html(
+                            `<p class="alert alert-danger">${res.message}</p>`
+                        );
+
                     }
+
+                },
+
+                error: function () {
+
+                    $("#result").html(
+                        `<p class="alert alert-danger">Something went wrong. Please try again.</p>`
+                    );
+
                 }
-            })
 
-        })
+            });
 
-    })
+        });
+
+    });
 
 </script>
-
 
 {% endblock %}

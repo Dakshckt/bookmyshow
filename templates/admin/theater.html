@@ -1,82 +1,333 @@
-{% extends "base.html" %}
 
-{% block content %}
+{% extends "base.html" %}
 {% load static %}
 
-<h3 class="h3 p-2">Theater Page</h3><hr>
+{% block content %}
 
+<style>
+    .theater-page {
+        background: #f5f6fa;
+        min-height: 85vh;
+        padding: 25px;
+        border-radius: 12px;
+    }
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
+    .page-heading {
+        color: #292b3a;
+        font-weight: 700;
+    }
+
+    .theater-card {
+        background: #fff;
+        border: 1px solid #e8e8f0;
+        border-radius: 12px;
+        padding: 25px;
+        height: 100%;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+    }
+
+    .section-heading {
+        font-size: 18px;
+        font-weight: 700;
+        color: #292b3a;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #55566a;
+        margin-bottom: 7px;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #dedee8;
+        border-radius: 8px;
+        padding: 11px 13px;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #635bdb;
+        box-shadow: 0 0 0 3px rgba(99,91,219,0.12);
+    }
+
+    .btn-purple {
+        background: #635bdb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-weight: 600;
+    }
+
+    .btn-purple:hover {
+        background: #5149c5;
+        color: white;
+    }
+
+    .theater-count {
+        background: #f0efff;
+        color: #635bdb;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .theater-item {
+        border: 1px solid #ececf2;
+        border-radius: 9px;
+        padding: 14px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+    .theater-icon {
+        width: 42px;
+        height: 42px;
+        background: #f0efff;
+        color: #635bdb;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        flex-shrink: 0;
+    }
+
+    .theater-name {
+        font-weight: 650;
+        color: #303044;
+        margin-bottom: 3px;
+    }
+
+    .theater-location {
+        font-size: 13px;
+        color: #858599;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 35px 10px;
+        color: #9292a3;
+    }
+
+    .empty-state i {
+        font-size: 35px;
+        display: block;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="theater-page">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="page-heading mb-1">Theater Management</h3>
+            <p class="text-muted mb-0">Add and manage theaters in different locations.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Add Theater Form -->
+        <div class="col-lg-5 col-12">
+            <div class="theater-card">
+
+                <h5 class="section-heading">
+                    <i class="bi bi-plus-circle me-2" style="color:#635bdb;"></i>
+                    Add New Theater
+                </h5>
 
                 <form id="theaterForm" method="POST">
-
                     {% csrf_token %}
-                <!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
-                    <select name="citySelect" id="citySelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                        <option value="null">Select city</option>
-                        {% for city in cities %}
-                        <option value="{{city.id}}">{{city.name}}</option>
-                        {% endfor %}
-                    </select><br>
 
-                    <select name="locationSelect" id="locationSelect" class="border border-black px-3 py-2 mt-4 ms-2">
-                        <option value="null">Select location</option>
-                    </select><br>
+                    <div class="mb-3">
+                        <label class="form-label">Select City</label>
 
-                    <input type="text" name="theaterName" id="theaterName" placeholder="Enter the Name of Theater" class="border border-black px-3 py-2 mt-4 ms-2"><br>
+                        <!-- City options are provided by adminPanel.js / Django -->
+                        <select name="citySelect" id="citySelect" class="form-select" required>
+                            <option value="null">Select city</option>
+                            {% for city in cities %}
+                                <option value="{{ city.id }}">{{ city.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                    <input type="submit" value="submit" name="submit" class="btn btn-primary px-3 mt-4 ms-2 px-5">
+                    <div class="mb-3">
+                        <label class="form-label">Select Location</label>
 
-                    <br><br><Br><p id="result"></p>
+                        <select name="locationSelect" id="locationSelect" class="form-select" required>
+                            <option value="null">Select location</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Theater Name</label>
+
+                        <input
+                            type="text"
+                            name="theaterName"
+                            id="theaterName"
+                            class="form-control"
+                            placeholder="Enter theater name"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-purple w-100">
+                        <i class="bi bi-plus-lg me-1"></i> Add Theater
+                    </button>
+
+                    <div id="result" class="mt-3"></div>
 
                 </form>
 
             </div>
         </div>
-        <div class="col-md-6 col-12 parentBoxDesign">
-            <div class="boxDesign">
 
-                Display
+        <!-- Theater Display -->
+        <div class="col-lg-7 col-12">
+            <div class="theater-card">
+
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h5 class="section-heading mb-0">Existing Theaters</h5>
+
+                    <span class="theater-count">
+                        Total: {{ theaters|length }}
+                    </span>
+                </div>
+
+                <input
+                    type="text"
+                    id="searchTheater"
+                    class="form-control mb-3"
+                    placeholder="Search theater or location..."
+                >
+
+                <div id="theaterList">
+
+                    {% for theater in theaters %}
+                        <div class="theater-item theater-entry"
+                             data-search="{{ theater.name|lower }} {{ theater.location_name|lower }}">
+
+                            <div class="theater-icon">
+                                <i class="bi bi-building"></i>
+                            </div>
+
+                            <div>
+                                <div class="theater-name">{{ theater.name }}</div>
+                                <div class="theater-location">
+                                    <i class="bi bi-geo-alt me-1"></i>
+                                    {{ theater.location_name }}
+                                </div>
+                            </div>
+
+                        </div>
+                    {% empty %}
+                        <div class="empty-state" id="emptyTheaters">
+                            <i class="bi bi-building"></i>
+                            <p class="mb-0">No theaters added yet.</p>
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+                <div id="noSearchResult" class="empty-state" style="display:none;">
+                    <i class="bi bi-search"></i>
+                    <p class="mb-0">No matching theaters found.</p>
+                </div>
 
             </div>
         </div>
+
     </div>
 </div>
 
 
-
-<!-- ? The city select is comming from teh common adminPanel js file for all the city select options  -->
+<!-- Existing common admin panel JS -->
 <script src="{% static 'js/adminPanel.js' %}"></script>
 
 <script>
+$(document).ready(function(){
 
-    $(document).ready(function(){
+    console.log("Theater Page");
 
-        console.log("theater Page")
-       
+    // Search theaters
+    $("#searchTheater").on("keyup", function(){
 
-        $("#theaterForm").submit(function(event){
+        let searchValue = $(this).val().toLowerCase();
+        let visibleCount = 0;
 
-            event.preventDefault()
+        $(".theater-entry").each(function(){
 
-            $.ajax({
-                url : "",
-                type : "POST",
-                data : $(this).serialize(),
-                success : function(res)
-                {
-                    $("#result").html(`<p class="alert alert-success">${res.message}</p>`)
-                    $("#theaterName").val('')
-                }                    
-            })
+            let theaterData = $(this).attr("data-search");
 
-        })
+            if(theaterData.includes(searchValue)){
+                $(this).show();
+                visibleCount++;
+            }
+            else{
+                $(this).hide();
+            }
 
-    })
+        });
 
+        if(visibleCount === 0 && $(".theater-entry").length > 0){
+            $("#noSearchResult").show();
+        }
+        else{
+            $("#noSearchResult").hide();
+        }
+
+    });
+
+
+    // Add theater using AJAX
+    $("#theaterForm").submit(function(event){
+
+        event.preventDefault();
+
+        $.ajax({
+            url: "",
+            type: "POST",
+            data: $(this).serialize(),
+
+            success: function(res){
+
+                if(res.status){
+
+                    $("#result").html(
+                        `<div class="alert alert-success">${res.message}</div>`
+                    );
+
+                    $("#theaterName").val('');
+
+                }
+                else{
+
+                    $("#result").html(
+                        `<div class="alert alert-danger">${res.message}</div>`
+                    );
+
+                }
+
+            },
+
+            error: function(){
+
+                $("#result").html(
+                    `<div class="alert alert-danger">Something went wrong. Please try again.</div>`
+                );
+
+            }
+
+        });
+
+    });
+
+});
 </script>
 
 {% endblock %}

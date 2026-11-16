@@ -1,55 +1,234 @@
+
 {% extends 'base.html' %}
 
 {% block content %}
 
-<h3 class="m-2 h3">Signup Page</h3>
+<style>
+    body {
+        background-color: #f5f6fa;
+    }
 
-<form id="signupForm" method="post">
-    {% csrf_token %}
+    .signup-container {
+        min-height: 75vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 25px 15px;
+    }
 
-    <input type="text" name="name" placeholder="Enter Your Name" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-    <input type="text" name="phone" placeholder="Enter Your Phone" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-    <input type="email" name="email" placeholder="Enter Your Email" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-    <input type="password" name="password" placeholder="Enter Your Password" class="border border-black px-3 py-2 mt-4 ms-2"><Br>
-    <input type="password" name="confirm_password" placeholder="Confirm Your Password" class="border border-black px-3 py-2 mt-4 ms-2"><br>
-    <input type="submit" name="submit" value="submit" class="btn btn-primary px-3 mt-4 ms-2 px-5">
+    .signup-card {
+        background: #ffffff;
+        border: 1px solid #eeeeF5;
+        border-radius: 14px;
+        padding: 35px;
+        width: 100%;
+        max-width: 480px;
+    }
 
-    <br><Br><Br>
-    <p id="result"></p>
+    .signup-icon {
+        width: 65px;
+        height: 65px;
+        background: #eeecff;
+        color: #635bdb;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin: 0 auto 20px;
+    }
 
-    
-</form>
+    .signup-title {
+        color: #252538;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .signup-subtitle {
+        color: #888899;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .form-label {
+        color: #444455;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        padding: 12px 14px;
+        border-radius: 7px;
+        border: 1px solid #ddddE8;
+    }
+
+    .form-control:focus {
+        border-color: #635bdb;
+        box-shadow: 0 0 0 0.15rem rgba(99, 91, 219, 0.12);
+    }
+
+    .signup-btn {
+        background-color: #635bdb;
+        color: white;
+        padding: 11px;
+        border-radius: 7px;
+        border: none;
+        font-weight: 500;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .signup-btn:hover {
+        background-color: #5149c5;
+        color: white;
+    }
+
+    #result {
+        font-size: 14px;
+        text-align: center;
+    }
+</style>
+
+<div class="container signup-container">
+
+    <div class="signup-card">
+
+        <div class="signup-icon">
+            <i class="bi bi-person-plus"></i>
+        </div>
+
+        <h3 class="signup-title">Create Account</h3>
+
+        <p class="signup-subtitle">
+            Sign up to get started with your account.
+        </p>
+
+        <form id="signupForm" method="post">
+
+            {% csrf_token %}
+
+            <!-- Name -->
+            <div class="mb-3">
+
+                <label class="form-label">Full Name</label>
+
+                <input
+                    type="text"
+                    name="name"
+                    class="form-control"
+                    placeholder="Enter your name"
+                    required
+                >
+
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+
+                <label class="form-label">Phone Number</label>
+
+                <input
+                    type="tel"
+                    name="phone"
+                    class="form-control"
+                    placeholder="Enter your phone number"
+                    required
+                >
+
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+
+                <label class="form-label">Email Address</label>
+
+                <input
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Enter your email"
+                    required
+                >
+
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+
+                <label class="form-label">Password</label>
+
+                <input
+                    type="password"
+                    name="password"
+                    class="form-control"
+                    placeholder="Enter your password"
+                    required
+                >
+
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3">
+
+                <label class="form-label">Confirm Password</label>
+
+                <input
+                    type="password"
+                    name="confirm_password"
+                    class="form-control"
+                    placeholder="Confirm your password"
+                    required
+                >
+
+            </div>
+
+            <!-- Submit -->
+            <input
+                type="submit"
+                name="submit"
+                value="Create Account"
+                class="btn signup-btn"
+            >
+
+            <div class="mt-4" id="result"></div>
+
+        </form>
+
+    </div>
+
+</div>
 
 <script>
 
-    
     $(document).ready(function(){
-        console.log("Signup Page")
+
+        console.log("Signup Page");
 
         $("#signupForm").submit(function(event){
 
-            event.preventDefault()
+            event.preventDefault();
 
             $.ajax({
-                url : "",
-                type : "POST",
-                data : $(this).serialize(),
-                success : function(res){
-                    
+                url: "",
+                type: "POST",
+                data: $(this).serialize(),
+
+                success: function(res){
+
                     $("#result").html(res.message);
 
                     setTimeout(function(){
-                        window.location.href = "/login/"
-                    } , 1000)
+                        window.location.href = "/login/";
+                    }, 1000);
 
                 }
-            })
+            });
 
-        })
+        });
 
-    })
+    });
 
 </script>
-
 
 {% endblock %}

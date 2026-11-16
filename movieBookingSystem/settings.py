@@ -20,10 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-kyu*bhhm(1ac=4=-z+!+xoz%q7i(*1z91x=t5_$cedvh3-bj5='
+SECRET_KEY = 'knou6)2(*b1hg!57usp4^*)k5y-gw6f#4m%l+r*r$)0b761*wb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -125,8 +126,17 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+
+MONGO_DB = {
+    "HOST": "mongodb+srv://dakshpatel5655ckt_db_user:PIUXDqT14wW82DNa@bookmyshow.xzqkg8v.mongodb.net/",
+    "DATABASE": "bookmyshow"
+}
 
 
 # Default primary key field type
